@@ -1,6 +1,12 @@
 # Dependencies
 node_modules/
 
+# .NET build output
+server/bin/
+server/obj/
+server.Tests/bin/
+server.Tests/obj/
+
 # Env files (real secrets — never commit these)
 .env
 .env.local
@@ -19,6 +25,7 @@ npm-debug.log*
 .DS_Store
 .vscode/
 .idea/
+*.user
 
 # Test coverage
 coverage/

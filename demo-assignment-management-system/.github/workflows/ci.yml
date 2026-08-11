@@ -8,19 +8,16 @@ on:
 
 jobs:
   server-tests:
-    name: Server tests
+    name: Server build + tests (.NET)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-dotnet@v4
         with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: server/package-lock.json
-      - run: npm ci
-        working-directory: server
-      - run: npm test
-        working-directory: server
+          dotnet-version: '8.0.x'
+      - run: dotnet restore AssignmentManagementSystem.sln
+      - run: dotnet build AssignmentManagementSystem.sln --no-restore --configuration Release
+      - run: dotnet test AssignmentManagementSystem.sln --no-build --configuration Release --verbosity normal
 
   client-tests:
     name: Client tests + build

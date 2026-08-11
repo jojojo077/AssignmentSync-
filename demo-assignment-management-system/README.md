@@ -7,14 +7,15 @@ built for the SQA mid-project (see `SQA_Mid-Project_Report.docx` for the full re
 ## Stack
 
 - **Client:** React 19 + Vite, React Router, Axios
-- **Server:** Node.js + Express, Axios (Canvas API client)
-- **Testing:** Jest + Supertest (server), Vitest + React Testing Library (client)
+- **Server:** ASP.NET Core 8 Web API (C#), Controllers-based, `HttpClient` (Canvas API client)
+- **Testing:** xUnit + `WebApplicationFactory` (server), Vitest + React Testing Library (client)
 - **CI:** GitHub Actions (`.github/workflows/ci.yml`) runs both test suites on every push/PR
 
 ## Project structure
 
 ```
 assignment-management-system/
+├── AssignmentManagementSystem.sln   solution file — open this in Rider/VS/VS Code
 ├── client/                 React frontend (Vite)
 │   └── src/
 │       ├── pages/          Dashboard, Calendar, Assignments, Login, NotFound
@@ -22,32 +23,43 @@ assignment-management-system/
 │       ├── context/        AuthContext (login state)
 │       ├── services/       api.js — all backend calls live here
 │       └── router.jsx      route table
-├── server/                 Express API
-│   └── src/
-│       ├── routes/         /api/health, /api/auth, /api/canvas
-│       ├── controllers/    request handlers
-│       ├── services/       canvasService.js — Canvas REST API wrapper
-│       ├── middleware/     error handling, auth guard
-│       └── config/         env.js — single source of truth for env vars
+├── server/                 ASP.NET Core Web API
+│   ├── Controllers/        HealthController, AuthController, CanvasController
+│   ├── Services/           ICanvasService / CanvasService — Canvas REST API wrapper
+│   ├── Middleware/         ExceptionHandlingMiddleware, RequireAuthAttribute, ApiException
+│   ├── Config/              CanvasOptions, JwtOptions (bound from appsettings.json)
+│   ├── Models/              DTOs (Canvas courses/assignments, auth requests)
+│   ├── Program.cs           service registration + middleware pipeline
+│   └── appsettings.json     committed config, placeholder values only
+├── server.Tests/           xUnit integration tests (WebApplicationFactory<Program>)
 └── docs/
     └── ARCHITECTURE.md     requirements → implementation traceability
 ```
 
 ## Getting started
 
-You need Node 18+ installed.
+You need the **.NET 8 SDK** and **Node 18+** installed.
 
-### 1. Server
+### 1. Server (ASP.NET Core)
 
 ```bash
 cd server
-cp .env.example .env      # fill in CANVAS_BASE_URL and CANVAS_ACCESS_TOKEN
-npm install
-npm run dev                # http://localhost:5000
+dotnet restore
+dotnet run                 # http://localhost:5000 (port is fixed in Properties/launchSettings.json)
 ```
 
-To get a Canvas access token for local testing: Canvas → Account → Settings → **New Access
-Token**. `CANVAS_BASE_URL` is your institution's Canvas instance, e.g. `https://aut.instructure.com`.
+Canvas isn't configured by default — `GET /api/canvas/*` will return a clean `500` explaining
+what's missing until you set it. **Don't put real secrets in `appsettings.json`** (it's
+committed to git) — use .NET's user-secrets instead, which stores them outside the repo:
+
+```bash
+cd server
+dotnet user-secrets init
+dotnet user-secrets set "Canvas:BaseUrl" "https://aut.instructure.com"
+dotnet user-secrets set "Canvas:AccessToken" "your-canvas-personal-access-token"
+```
+
+Get a token from Canvas → Account → Settings → **New Access Token**.
 
 ### 2. Client
 
@@ -58,43 +70,52 @@ npm install
 npm run dev                # http://localhost:5173
 ```
 
+No changes needed on the client side — the route surface is identical (`/api/health`,
+`/api/auth/*`, `/api/canvas/*`), so `client/src/services/api.js` talks to the C# backend
+exactly like it did the old one.
+
 ### 3. Run the tests
 
 ```bash
-cd server && npm test      # Jest + Supertest
-cd client && npm test      # Vitest + React Testing Library
+dotnet test                # from repo root — runs server.Tests via the .sln
+cd client && npm test       # Vitest + React Testing Library
 ```
-
-Both suites are already green on this scaffold (2 server tests, 1 client test) — they're
-there as a starting point to build real coverage against as features land.
 
 ## What's implemented vs. stubbed
 
 | Area | Status |
 |---|---|
-| Express app, error handling, CORS, health check | ✅ working |
-| Canvas API service (`getCourses`, `getAssignmentsForCourse`, `getAllUpcomingAssignments`) | ✅ working, needs a real Canvas token to hit |
-| Dashboard page fetching `/api/canvas/assignments` | ✅ working |
-| React Router shell, nav, page skeletons (Calendar, Assignments, Login) | ✅ working, UI is unstyled placeholder |
-| Auth (register/login) | 🚧 stubbed — routes exist, return `501`, no password hashing or JWT signing yet |
+| ASP.NET Core app, exception middleware, CORS, health check | ✅ working |
+| Canvas API service (`GetCoursesAsync`, `GetAssignmentsForCourseAsync`, `GetAllUpcomingAssignmentsAsync`) | ✅ working, needs a real Canvas token to hit |
+| Dashboard page fetching `/api/canvas/assignments` | ✅ working, UI is unstyled placeholder |
+| React Router shell, nav, page skeletons (Calendar, Assignments, Login) | ✅ working |
+| Auth (register/login) | 🚧 stubbed — endpoints exist, return `501`, no password hashing or JWT signing yet |
 | Workload calculation, notifications, reporting/analytics | ⬜ not started |
 | Progress tracking (completion %) | ⬜ not started |
 
-## A note on dependency versions
+## A note on how this was verified
 
-`client/package.json` pins `vite@^7.0.0` and `@vitejs/plugin-react@^5.2.0` on purpose —
-the freshly-scaffolded `vite@8` + `vitest@2` combination has a peer dependency mismatch
-(vitest 2.x bundles vite 5 internally) that breaks the JSX transform in tests. Vitest 5
-(currently in beta) is expected to fix this properly; until it's stable, this pin is the
-simplest reliable setup. Worth a line in the report's "limitations/risks" section if you
-want a real example of a dependency-management issue you hit and resolved.
+The ASP.NET Core project (`server/`) was built and run end-to-end in the environment that
+produced this scaffold, hitting every endpoint live: `/api/health` (200), `/api/canvas/courses`
+without a token (401), with a token but no Canvas config (500 with a clear message), CORS
+preflight from the client origin, and `/api/auth/login` (501). All matched expectations.
+
+**One caveat:** that environment can't reach `nuget.org`, so while the API itself (which uses
+zero external NuGet packages — everything comes from the ASP.NET Core shared framework) was
+fully build- and run-verified, the `server.Tests` project (which needs `xunit`,
+`Microsoft.NET.Test.Sdk`, and `Microsoft.AspNetCore.Mvc.Testing` from NuGet) could not be
+restored or run there. The test code follows completely standard `WebApplicationFactory` +
+xUnit patterns and asserts exactly the behaviour verified above, but **run `dotnet test`
+yourself as your first step** rather than assuming it's proven — that's honest, not a formality.
 
 ## Suggested next steps
 
-1. Wire up real auth: password hashing (`bcrypt`) + JWT signing in `auth.controller.js`, then
-   flip `login()` in `AuthContext` to actually store a real token.
+1. Wire up real auth: add `BCrypt.Net-Next` for password hashing and
+   `Microsoft.AspNetCore.Authentication.JwtBearer` for JWT issuing/validation in
+   `AuthController`, then flip `RequireAuthAttribute` for a standard `[Authorize]`.
 2. Add a `ProtectedRoute` wrapper in the client so `/`, `/calendar`, `/assignments` require login.
 3. Build the workload calculation (distribute estimated hours across days before each due date)
-   as a small pure function in `server/src/services/` — easy to unit test in isolation.
-4. Pick a data store (Postgres/Mongo) for users + local assignment metadata (completion %,
-   priority) that Canvas doesn't track — Canvas is a read-only source of truth for deadlines.
+   as a small, easily-unit-tested class in `server/Services/`.
+4. Pick a data store (EF Core + SQL Server/PostgreSQL/SQLite) for users + local assignment
+   metadata (completion %, priority) that Canvas doesn't track — Canvas stays a read-only
+   source of truth for deadlines.

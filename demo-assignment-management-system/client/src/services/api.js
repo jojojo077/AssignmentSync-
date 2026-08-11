@@ -3,7 +3,7 @@ import axios from 'axios';
 // Single axios instance for the whole app. Base URL comes from Vite env
 // (see .env.example) so it's easy to point at a deployed API later.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api',
 });
 
 // Attach the auth token (once login is implemented) to every request.
