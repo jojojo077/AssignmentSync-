@@ -39,8 +39,9 @@ export default function Dashboard() {
       {status === 'loading' && <p>Loading assignments…</p>}
       {status === 'error' && (
         <p role="alert">
-          Couldn&rsquo;t load assignments. Check that the server is running and Canvas is
-          configured in server/.env.
+          Couldn&rsquo;t load assignments. Check that the server is running (
+          <code>dotnet run</code> in <code>server/</code>) and that Canvas is configured via{' '}
+          <code>dotnet user-secrets</code>.
         </p>
       )}
       {status === 'ready' && assignments.length === 0 && <p>No courses found.</p>}

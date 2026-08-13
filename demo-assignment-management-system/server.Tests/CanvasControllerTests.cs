@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
@@ -10,18 +9,19 @@ public class CanvasControllerTests(WebApplicationFactory<Program> factory) : ICl
     private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
-    public async Task GetCourses_WithoutAuthHeader_Returns401()
+    public async Task GetCourses_WithoutAuthHeader_StillReachesController()
     {
+        // The [RequireAuth] guard was removed for now (see CanvasController) since
+        // there's no login flow yet to issue a token. This should reach the
+        // controller and fail on missing Canvas config, not on missing auth.
         var response = await _client.GetAsync("/api/canvas/courses");
 
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task GetCourses_WithAuthHeaderButNoCanvasConfig_Returns500WithMessage()
+    public async Task GetCourses_WithNoCanvasConfig_Returns500WithMessage()
     {
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "test-token");
-
         var response = await _client.GetAsync("/api/canvas/courses");
 
         // appsettings.json in the test host has empty Canvas:BaseUrl/AccessToken,

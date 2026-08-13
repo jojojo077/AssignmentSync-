@@ -37,6 +37,7 @@ public class CanvasService : ICanvasService
             _http.BaseAddress = new Uri($"{canvas.BaseUrl.TrimEnd('/')}/api/v1/");
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", canvas.AccessToken);
+            _http.DefaultRequestHeaders.UserAgent.ParseAdd("AssignmentManagementSystem/1.0");
         }
     }
 
@@ -54,20 +55,38 @@ public class CanvasService : ICanvasService
     {
         EnsureConfigured();
 
-        var courses = await _http.GetFromJsonAsync<List<CanvasCourse>>(
-            "courses?enrollment_state=active&per_page=100");
-
-        return courses ?? [];
+        return await GetJsonOrThrowAsync<List<CanvasCourse>>(
+            "courses?enrollment_state=active&per_page=100") ?? [];
     }
 
     public async Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId)
     {
         EnsureConfigured();
 
-        var assignments = await _http.GetFromJsonAsync<List<CanvasAssignment>>(
-            $"courses/{courseId}/assignments?per_page=100&order_by=due_at");
+        return await GetJsonOrThrowAsync<List<CanvasAssignment>>(
+            $"courses/{courseId}/assignments?per_page=100&order_by=due_at") ?? [];
+    }
 
-        return assignments ?? [];
+    /// <summary>
+    /// GetFromJsonAsync's built-in error handling throws away the response
+    /// body on a non-success status, so all you ever see is "403 Forbidden"
+    /// with no explanation. Canvas usually puts a specific reason in the
+    /// body (e.g. "Invalid access token", "insufficient scope") — this reads
+    /// it and puts it in the exception message instead of discarding it.
+    /// </summary>
+    private async Task<T?> GetJsonOrThrowAsync<T>(string requestUri)
+    {
+        var response = await _http.GetAsync(requestUri);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            throw new ApiException((int)response.StatusCode,
+                $"Canvas API request to '{requestUri}' failed with {(int)response.StatusCode} " +
+                $"{response.ReasonPhrase}: {body}");
+        }
+
+        return await response.Content.ReadFromJsonAsync<T>();
     }
 
     /// <summary>
@@ -87,8 +106,6 @@ public class CanvasService : ICanvasService
             }
             catch
             {
-                // a single course failing (e.g. no assignment permissions) shouldn't
-                // take down the whole aggregate view
                 return (IReadOnlyList<CanvasAssignment>)[];
             }
         });
