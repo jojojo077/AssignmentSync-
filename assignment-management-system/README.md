@@ -45,7 +45,7 @@ You need the **.NET 8 SDK** and **Node 18+** installed.
 ```bash
 cd server
 dotnet restore
-dotnet run                 # http://localhost:5000 (port is fixed in Properties/launchSettings.json)
+dotnet run                 # http://localhost:5001 (port is fixed in Properties/launchSettings.json)
 ```
 
 Canvas isn't configured by default — `GET /api/canvas/*` will return a clean `500` explaining
