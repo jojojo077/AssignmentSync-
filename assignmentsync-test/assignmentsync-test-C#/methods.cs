@@ -2,146 +2,165 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 
-const string TOKEN = "19361~nnc8XwG7K86HEFueCXftm8c4DXVZWZwzChaTPUAz6ZHD3y8Kue4k23wHY9Dc3T7D";
+namespace AssignmentSyncMethods;
 
-using var client = new HttpClient();
-client.DefaultRequestHeaders.UserAgent.ParseAdd("CanvasSync/1.0");
-client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TOKEN.Trim());
-
-var response = await client.GetAsync("https://canvas.aut.ac.nz/api/v1/courses?per_page=100");
-response.EnsureSuccessStatusCode();
-
-var json = await response.Content.ReadAsStringAsync();
-using var doc = JsonDocument.Parse(json);
-var courses = doc.RootElement;
-
-void getCourses()
+public class Methods
 {
-    foreach (var course in courses.EnumerateArray())
-    {
-        string name = course.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "";
-        string code = course.TryGetProperty("course_code", out var c) ? c.GetString() ?? "" : "";
-        int id = course.TryGetProperty("id", out var i) ? i.GetInt32() : 0;
-        Console.WriteLine($"{name} ({code}) - ID: {id}");
-    }
-}
+    const string TOKEN = "19361~nnc8XwG7K86HEFueCXftm8c4DXVZWZwzChaTPUAz6ZHD3y8Kue4k23wHY9Dc3T7D";
 
-void returnCourseCalendars(string year, string semester)
-{
-    var calendarList = new List<string>();
-    foreach (var course in courses.EnumerateArray())
-    {
-        if (!course.TryGetProperty("name", out var nameEl)) continue;
-        if (!course.TryGetProperty("course_code", out var codeEl)) continue;
+    private HttpClient _client;
+    private JsonDocument _coursesDoc;
 
-        string code = codeEl.GetString() ?? "";
-        if (code.Contains(year) && code.Contains(semester))
-        {
-            if (course.TryGetProperty("calendar", out var cal) &&
-                cal.TryGetProperty("ics", out var ics))
-            {
-                calendarList.Add($"{code} {ics.GetString()}");
-            }
-        }
-    }
-
-    foreach (var entry in calendarList)
+    public async Task getCoursePage()
     {
-        Console.WriteLine(entry);
-    }
-}
+        _client = new HttpClient();
+        _client.DefaultRequestHeaders.UserAgent.ParseAdd("CanvasSync/1.0");
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TOKEN.Trim());
 
-async Task<List<string>> getAssignments(HttpClient client, JsonElement courses)
-{
-    var assignmentLists = new List<string>();
-    var validCourseCodes = new List<int>();
-    foreach (var course in courses.EnumerateArray())
-    {
-        if (!course.TryGetProperty("name", out var nameEl)) continue;
-        if (!course.TryGetProperty("course_code", out var codeEl)) continue;
-
-        string code = codeEl.GetString() ?? "";
-        if (code.Contains("2026") && code.Contains("S2"))
-        {
-            if (course.TryGetProperty("id", out var id))
-            {
-                validCourseCodes.Add(id.GetInt32());
-            }
-        }
-    }
-    // iterate through each assignment - by id
-    foreach (var courseId in validCourseCodes)
-    {
-        string url = $"https://canvas.aut.ac.nz/api/v1/courses/{courseId}/assignments";
-        var response = await client.GetAsync(url);
+        var response = await _client.GetAsync("https://canvas.aut.ac.nz/api/v1/courses?per_page=100");
         response.EnsureSuccessStatusCode();
 
-        string json = await response.Content.ReadAsStringAsync();
-        using var doc = JsonDocument.Parse(json);
+        var json = await response.Content.ReadAsStringAsync();
+        _coursesDoc = JsonDocument.Parse(json);  // Keep the document alive
+    }
+    
 
-        foreach (var assignment in doc.RootElement.EnumerateArray())
+    public async Task getCourses()
+    {   
+        await getCoursePage();
+        foreach (var course in _coursesDoc.RootElement.EnumerateArray())
         {
-            string name = assignment.TryGetProperty("name", out var nameEl2) ? nameEl2.GetString() ?? "Untitled" : "Untitled";
-            string dueTimestamp = assignment.TryGetProperty("due_at", out var dueAtEl) ? dueAtEl.GetString() ?? "No due date" : "";
-            string dueDate = dueTimestamp.Split('T')[0];
-            assignmentLists.Add($"{name} - {dueAtEl}");
+            string name = course.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "";
+            string code = course.TryGetProperty("course_code", out var c) ? c.GetString() ?? "" : "";
+            int id = course.TryGetProperty("id", out var i) ? i.GetInt32() : 0;
+            Console.WriteLine($"{name} ({code}) - ID: {id}");
         }
     }
-    return assignmentLists;
-}
 
-async Task<List<String>> searchAssignmentByCourseCode(string courseCode, HttpClient client, JsonElement courses)
-{
-    int targetCourse = -1;
-    var assignmentList = new List<String>();
-    foreach (var course in courses.EnumerateArray())
+    public async Task returnCourseCalendars(string year, string semester)
     {
-        if (!course.TryGetProperty("name", out var nameEl)) continue;
-        if (!course.TryGetProperty("course_code", out var codeEl)) continue;
+        await getCoursePage();
 
-        string code = codeEl.GetString() ?? "";
-
-        if (code.Contains(courseCode))
+        var calendarList = new List<string>();
+        foreach (var course in _coursesDoc.RootElement.EnumerateArray())
         {
-            if (course.TryGetProperty("id", out var id))
+            if (!course.TryGetProperty("name", out var nameEl)) continue;
+            if (!course.TryGetProperty("course_code", out var codeEl)) continue;
+
+            string code = codeEl.GetString() ?? "";
+            if (code.Contains(year) && code.Contains(semester))
             {
-                targetCourse = id.GetInt32();
-                string url = $"https://canvas.aut.ac.nz/api/v1/courses/{id}/assignments";
-                var response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-
-                string json = await response.Content.ReadAsStringAsync();
-                using var doc = JsonDocument.Parse(json);
-
-                foreach (var assignment in doc.RootElement.EnumerateArray())
+                if (course.TryGetProperty("calendar", out var cal) &&
+                    cal.TryGetProperty("ics", out var ics))
                 {
-                    string name = assignment.TryGetProperty("name", out var nameEl2) ? nameEl2.GetString() ?? "Untitled" : "Untitled";
-                    string dueTimestamp = assignment.TryGetProperty("due_at", out var dueAtEl) ? dueAtEl.GetString() ?? "No due date" : "";
-                    string dueDate = dueTimestamp.Split('T')[0];
-                    assignmentList.Add($"{name} - {dueDate}");
+                    calendarList.Add($"{code} {ics.GetString()}");
                 }
             }
         }
+
+        foreach (var entry in calendarList)
+        {
+            Console.WriteLine(entry);
+        }
     }
-    if (targetCourse == -1)
+
+    public async Task<List<string>> getAssignments()
     {
-        Console.WriteLine("Error");
-        return assignmentList; // error
+        await getCoursePage();
+        var assignmentLists = new List<string>();
+        var validCourseCodes = new List<int>();
+        foreach (var course in _coursesDoc.RootElement.EnumerateArray())
+        {
+            if (!course.TryGetProperty("name", out var nameEl)) continue;
+            if (!course.TryGetProperty("course_code", out var codeEl)) continue;
 
+            string code = codeEl.GetString() ?? "";
+            if (code.Contains("2026") && code.Contains("S2"))
+            {
+                if (course.TryGetProperty("id", out var id))
+                {
+                    validCourseCodes.Add(id.GetInt32());
+                }
+            }
+        }
+        // iterate through each assignment - by id
+        foreach (var courseId in validCourseCodes)
+        {
+            string url = $"https://canvas.aut.ac.nz/api/v1/courses/{courseId}/assignments";
+            var response = await _client.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+
+            string json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+
+            foreach (var assignment in doc.RootElement.EnumerateArray())
+            {
+                string name = assignment.TryGetProperty("name", out var nameEl2) ? nameEl2.GetString() ?? "Untitled" : "Untitled";
+                string dueTimestamp = assignment.TryGetProperty("due_at", out var dueAtEl) ? dueAtEl.GetString() ?? "No due date" : "";
+                string dueDate = dueTimestamp.Split('T')[0];
+                assignmentLists.Add($"{name} - {dueDate}");
+            }
+        }
+        return assignmentLists;
     }
-    return assignmentList;
-}
-//getCourses();
-//returnCourseCalendars("2023", "S2");
 
-//var assignments = await getAssignments(client, courses);
-//foreach (var name in assignments)
-//{
-//    Console.WriteLine(name);
-//}
+    public async Task<List<String>> searchAssignmentByCourseCode(string courseCode)
+    {
+        await getCoursePage();
+        int targetCourse = -1;
+        var assignmentList = new List<String>();
+        foreach (var course in _coursesDoc.RootElement.EnumerateArray())
+        {
+            if (!course.TryGetProperty("name", out var nameEl)) continue;
+            if (!course.TryGetProperty("course_code", out var codeEl)) continue;
 
-var assignments = await searchAssignmentByCourseCode("COMP703", client, courses);
-foreach (var x in assignments)
-{
-    Console.WriteLine(x);
+            string code = codeEl.GetString() ?? "";
+
+            if (code.Contains(courseCode))
+            {
+                if (course.TryGetProperty("id", out var id))
+                {
+                    targetCourse = id.GetInt32();
+                    string url = $"https://canvas.aut.ac.nz/api/v1/courses/{id}/assignments";
+                    var response = await _client.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+
+                    string json = await response.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(json);
+
+                    foreach (var assignment in doc.RootElement.EnumerateArray())
+                    {
+                        string name = assignment.TryGetProperty("name", out var nameEl2) ? nameEl2.GetString() ?? "Untitled" : "Untitled";
+                        string dueTimestamp = assignment.TryGetProperty("due_at", out var dueAtEl) ? dueAtEl.GetString() ?? "No due date" : "";
+                        string dueDate = dueTimestamp.Split('T')[0];
+                        assignmentList.Add($"{name} - {dueDate}");
+                    }
+                }
+            }
+        }
+        if (targetCourse == -1)
+        {
+            Console.WriteLine("Error");
+            return assignmentList; // error
+
+        }
+        return assignmentList;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
