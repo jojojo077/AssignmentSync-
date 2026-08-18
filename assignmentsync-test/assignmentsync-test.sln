@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37531.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "assignmentsync-test", "assignmentsync-test\assignmentsync-test.esproj", "{A2BEDED1-6D5E-5875-9FD9-BCAF2145198D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "assignmentsync-test-C#", "assignmentsync-test-C#\assignmentsync-test-C#.csproj", "{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A2BEDED1-6D5E-5875-9FD9-BCAF2145198D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2BEDED1-6D5E-5875-9FD9-BCAF2145198D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2BEDED1-6D5E-5875-9FD9-BCAF2145198D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{A2BEDED1-6D5E-5875-9FD9-BCAF2145198D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2BEDED1-6D5E-5875-9FD9-BCAF2145198D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2BEDED1-6D5E-5875-9FD9-BCAF2145198D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {38E75414-1456-411C-84F8-ABB3C34DBCEC}
+	EndGlobalSection
+EndGlobal
