@@ -11,17 +11,26 @@ public class Methods
     private HttpClient _client;
     private JsonDocument _coursesDoc;
 
+    public Methods(HttpClient? client = null)
+    {
+        _client = client;
+    }
+
     public async Task getCoursePage()
     {
-        _client = new HttpClient();
-        _client.DefaultRequestHeaders.UserAgent.ParseAdd("CanvasSync/1.0");
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TOKEN.Trim());
+        if (_client is null)
+        {
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.UserAgent.ParseAdd("CanvasSync/1.0");
+            _client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", TOKEN.Trim());
+        }
 
         var response = await _client.GetAsync("https://canvas.aut.ac.nz/api/v1/courses?per_page=100");
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync();
-        _coursesDoc = JsonDocument.Parse(json);  // Keep the document alive
+        _coursesDoc = JsonDocument.Parse(json);
     }
     
 
@@ -39,6 +48,10 @@ public class Methods
 
     public async Task returnCourseCalendars(string year, string semester)
     {
+        if (string.IsNullOrWhiteSpace(year) || string.IsNullOrWhiteSpace(semester))
+        {
+            throw new ArgumentException("Invalid parameters");
+        }
         await getCoursePage();
 
         var calendarList = new List<string>();
@@ -106,6 +119,11 @@ public class Methods
 
     public async Task<List<String>> searchAssignmentByCourseCode(string courseCode)
     {
+        if (string.IsNullOrWhiteSpace(courseCode))
+        {
+            throw new ArgumentException("Invalid Code provided.");
+        }
+
         await getCoursePage();
         int targetCourse = -1;
         var assignmentList = new List<String>();
@@ -140,8 +158,7 @@ public class Methods
         }
         if (targetCourse == -1)
         {
-            Console.WriteLine("Error");
-            return assignmentList; // error
+            throw new ArgumentException("No Courses found.");
 
         }
         return assignmentList;

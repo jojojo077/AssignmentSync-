@@ -5,6 +5,11 @@ VisualStudioVersion = 17.14.37531.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "assignmentsync-test-C#", "assignmentsync-test-C#\assignmentsync-test-C#.csproj", "{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignmentSync-methods.Tests", "AssignmentSync-methods.Tests\AssignmentSync-methods.Tests.csproj", "{39B3CC95-117A-45F9-8E02-6D2543CBCA93}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD} = {EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +20,10 @@ Global
 		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA73FB11-8E7A-451C-8188-E97FC7A0D3CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39B3CC95-117A-45F9-8E02-6D2543CBCA93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39B3CC95-117A-45F9-8E02-6D2543CBCA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39B3CC95-117A-45F9-8E02-6D2543CBCA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39B3CC95-117A-45F9-8E02-6D2543CBCA93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
