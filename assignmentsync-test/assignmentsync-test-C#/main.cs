@@ -24,11 +24,11 @@ namespace assignmentsync_test_C_
             //    Console.WriteLine(name);
             //}
 
-            var assignments = await m.searchAssignmentByCourseCode("COMP703");
-            foreach (var x in assignments)
-            {
-                Console.WriteLine(x);
-            }
+            //var assignments = await m.searchAssignmentByCourseCode("COMP703");
+            //foreach (var x in assignments)
+            //{
+            //    Console.WriteLine(x);
+            //}
         }
     }
 }
