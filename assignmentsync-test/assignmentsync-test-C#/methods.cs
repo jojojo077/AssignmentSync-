@@ -1,18 +1,44 @@
 ﻿using System.Net.Http.Headers;
+using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace AssignmentSyncMethods;
 
-public class Methods
+public class Account
 {
-    const string TOKEN = "19361~nnc8XwG7K86HEFueCXftm8c4DXVZWZwzChaTPUAz6ZHD3y8Kue4k23wHY9Dc3T7D";
-
     private HttpClient _client;
     private JsonDocument _coursesDoc;
 
-    public Methods(HttpClient? client = null)
+    private string username;
+    private string password;
+
+    public string URL { get; set; }
+    protected string TOKEN { get; private set; }
+
+
+    public bool SetLogin(string user, string pass)
     {
+        if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(pass))
+        {
+            throw new ArgumentException("Login details are invalid.");
+        }
+
+        username = user;
+        password = pass;
+        
+        return true;
+    }
+
+    public Account(string url, string token, HttpClient? client = null)
+    {
+        if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(token))
+        {
+            throw new ArgumentException("Access details are invalid.");
+        }
+
+        this.URL = url;
+        this.TOKEN = token;
         _client = client;
     }
 
@@ -26,7 +52,7 @@ public class Methods
                 new AuthenticationHeaderValue("Bearer", TOKEN.Trim());
         }
 
-        var response = await _client.GetAsync("https://canvas.aut.ac.nz/api/v1/courses?per_page=100");
+        var response = await _client.GetAsync($"https://{URL}/api/v1/courses?per_page=100");
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync();
@@ -99,7 +125,7 @@ public class Methods
         // iterate through each assignment - by id
         foreach (var courseId in validCourseCodes)
         {
-            string url = $"https://canvas.aut.ac.nz/api/v1/courses/{courseId}/assignments";
+            string url = $"https://{URL}/api/v1/courses/{courseId}/assignments";
             var response = await _client.GetAsync(url);
             response.EnsureSuccessStatusCode();
 
@@ -139,7 +165,7 @@ public class Methods
                 if (course.TryGetProperty("id", out var id))
                 {
                     targetCourse = id.GetInt32();
-                    string url = $"https://canvas.aut.ac.nz/api/v1/courses/{id}/assignments";
+                    string url = $"https://{URL}/api/v1/courses/{id}/assignments";
                     var response = await _client.GetAsync(url);
                     response.EnsureSuccessStatusCode();
 

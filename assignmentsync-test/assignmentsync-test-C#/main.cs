@@ -12,7 +12,8 @@ namespace assignmentsync_test_C_
     {
         public static async Task Main(string[] args)
         {
-            var m = new Methods();
+            const string TOKEN = "19361~nnc8XwG7K86HEFueCXftm8c4DXVZWZwzChaTPUAz6ZHD3y8Kue4k23wHY9Dc3T7D";
+            var m = new Account("canvas.aut.ac.nz", TOKEN);
 
             //await m.getCourses();
             //await m.returnCourseCalendars("2026", "S2");
