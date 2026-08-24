@@ -7,13 +7,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMS.Api", "server\AMS.Api.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMS.Api.Tests", "server.Tests\AMS.Api.Tests.csproj", "{EF0CE5CF-6C5D-4B03-958A-8BC6511FC827}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "assignmentsync-test-C#", "..\assignmentsync-test\assignmentsync-test-C#\assignmentsync-test-C#.csproj", "{B4F53CDF-1EEA-1CC5-4964-CBB5A1AF1B37}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssignmentSync-methods.Tests", "..\assignmentsync-test\AssignmentSync-methods.Tests\AssignmentSync-methods.Tests.csproj", "{06D39D40-EBB9-626F-D34D-5DD98F90CD4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2B657C6A-EE22-4935-BD8D-C4466F8E7508}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -24,5 +25,16 @@ Global
 		{EF0CE5CF-6C5D-4B03-958A-8BC6511FC827}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF0CE5CF-6C5D-4B03-958A-8BC6511FC827}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF0CE5CF-6C5D-4B03-958A-8BC6511FC827}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4F53CDF-1EEA-1CC5-4964-CBB5A1AF1B37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4F53CDF-1EEA-1CC5-4964-CBB5A1AF1B37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4F53CDF-1EEA-1CC5-4964-CBB5A1AF1B37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4F53CDF-1EEA-1CC5-4964-CBB5A1AF1B37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06D39D40-EBB9-626F-D34D-5DD98F90CD4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06D39D40-EBB9-626F-D34D-5DD98F90CD4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06D39D40-EBB9-626F-D34D-5DD98F90CD4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06D39D40-EBB9-626F-D34D-5DD98F90CD4C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
