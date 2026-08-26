@@ -16,19 +16,16 @@ namespace assignmentsync_test_C_
             var m = new Account("canvas.aut.ac.nz", TOKEN);
 
             //await m.getCourses();
-            //await m.returnCourseCalendars("2026", "S2");
+            //var assignments = await m.returnCourseCalendars("2026", "S2");
 
             //var assignments = await m.getAssignments();
-            //foreach (var name in assignments)
-            //{
-            //    Console.WriteLine(name);
-            //}
+            
 
-            //var assignments = await m.searchAssignmentByCourseCode("COMP703");
-            //foreach (var x in assignments)
-            //{
-            //    Console.WriteLine(x);
-            //}
+            var assignments = await m.searchAssignmentByCourseCode("ENSE707");
+            foreach (var x in assignments)
+            {
+                Console.WriteLine(x);
+            }
         }
     }
 }

@@ -10,8 +10,8 @@ public class Account
     private HttpClient _client;
     private JsonDocument _coursesDoc;
 
-    private string username;
-    private string password;
+    private string username { get; set; }
+    private string password { get; set; }
 
     public string URL { get; set; }
     protected string TOKEN { get; private set; }
@@ -72,7 +72,7 @@ public class Account
         }
     }
 
-    public async Task returnCourseCalendars(string year, string semester)
+    public async Task<List<string>> returnCourseCalendars(string year, string semester)
     {
         if (string.IsNullOrWhiteSpace(year) || string.IsNullOrWhiteSpace(semester))
         {
@@ -97,10 +97,7 @@ public class Account
             }
         }
 
-        foreach (var entry in calendarList)
-        {
-            Console.WriteLine(entry);
-        }
+        return calendarList;
     }
 
     public async Task<List<string>> getAssignments()
