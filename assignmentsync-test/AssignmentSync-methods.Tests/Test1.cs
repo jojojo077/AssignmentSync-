@@ -12,16 +12,37 @@ namespace AssignmentSync_methods.Tests
         [TestMethod]
         public void Constructor_ValidInputs_InitializeCorrectly()
         {
-            const string TOKEN = "19361~nnc8XwG7K86HEFueCXftm8c4DXVZWZwzChaTPUAz6ZHD3y8Kue4k23wHY9Dc3T7D";
-            var m = new Account("canvas.aut.ac.nz", TOKEN);
+            var m = new Account("website.co.nz", "12345~abcDEF");
 
             Assert.IsNotNull(m);
         }
+        [TestMethod]
         public void Constructor_InvalidInputs_ThrowsException()
         {
             try
             {
                 var m = new Account("", "");
+                Assert.Fail("Expected ArgumentException but no exception was thrown");
+            }
+            catch (ArgumentException)
+            {
+                // pass
+            }
+        }
+        [TestMethod]
+        public void SetLogin_ValidInputs_Successful()
+        {
+            var m = new Account("website.co.nz", "12345~abcDEF");
+            bool result = m.SetLogin("username", "password");
+            Assert.IsTrue(result);
+        }
+        [TestMethod]
+        public void SetLogin_NullInputs_Fail()
+        {
+            try
+            {
+                var m = new Account("website.co.nz", "12345~abcDEF");
+                m.SetLogin("", "");
                 Assert.Fail("Expected ArgumentException but no exception was thrown");
             }
             catch (ArgumentException)
