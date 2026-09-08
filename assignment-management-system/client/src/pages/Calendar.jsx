@@ -5,18 +5,25 @@ import MonthView from '../components/calendar/MonthView';
 import WeekView from '../components/calendar/WeekView';
 import AgendaView from '../components/calendar/AgendaView';
 import AssignmentModal from '../components/calendar/AssignmentModal';
+import AddEventModal from '../components/calendar/AddEventModal';
 
 export default function Calendar() {
   const [coursesWithAssignments, setCoursesWithAssignments] = useState([]);
+  const [customEvents, setCustomEvents] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | loading | error | ready
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [viewMode, setViewMode] = useState('month'); // month | week | agenda
   const [selectedCourseIds, setSelectedCourseIds] = useState([]);
   const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     setStatus('loading');
+
+    // Load local/saved custom events via canvas API
+    const loadedCustomEvents = canvas.getCustomEvents ? canvas.getCustomEvents() : [];
+    setCustomEvents(loadedCustomEvents);
 
     canvas
       .getUpcomingAssignments()
@@ -24,8 +31,9 @@ export default function Calendar() {
         if (!cancelled) {
           const data = res.data || [];
           setCoursesWithAssignments(data);
-          // Default to all courses selected
-          setSelectedCourseIds(data.map((c) => c.courseId));
+          // Default to selecting all Canvas courses + custom events (99999)
+          const allIds = [...data.map((c) => c.courseId), 99999];
+          setSelectedCourseIds(allIds);
           setStatus('ready');
         }
       })
@@ -38,6 +46,19 @@ export default function Calendar() {
     };
   }, []);
 
+  // Combine Canvas courses with custom events pseudo-course
+  const allCourses = useMemo(() => {
+    const list = [...coursesWithAssignments];
+    if (customEvents.length > 0) {
+      list.push({
+        courseId: 99999,
+        courseName: 'Personal Events',
+        assignments: customEvents,
+      });
+    }
+    return list;
+  }, [coursesWithAssignments, customEvents]);
+
   // Course filter toggling
   const handleToggleCourse = (courseId) => {
     setSelectedCourseIds((prev) =>
@@ -48,19 +69,44 @@ export default function Calendar() {
   // Flatten assignments filtered by selected course IDs
   const filteredAssignments = useMemo(() => {
     const list = [];
-    coursesWithAssignments.forEach((course) => {
+    allCourses.forEach((course) => {
       if (selectedCourseIds.includes(course.courseId)) {
         (course.assignments || []).forEach((assignment) => {
           list.push({
             ...assignment,
-            courseId: course.courseId,
-            courseName: course.courseName,
+            courseId: assignment.courseId || course.courseId,
+            courseName: assignment.courseName || course.courseName,
           });
         });
       }
     });
     return list;
-  }, [coursesWithAssignments, selectedCourseIds]);
+  }, [allCourses, selectedCourseIds]);
+
+  // Add custom event handler
+  const handleSaveEvent = (eventData) => {
+    if (canvas.addEvent) {
+      canvas.addEvent(eventData).then((res) => {
+        const created = res.data;
+        setCustomEvents((prev) => [...prev, created]);
+        if (!selectedCourseIds.includes(99999)) {
+          setSelectedCourseIds((prev) => [...prev, 99999]);
+        }
+      });
+    } else {
+      const created = { ...eventData, id: `custom_${Date.now()}`, isCustom: true };
+      setCustomEvents((prev) => [...prev, created]);
+    }
+  };
+
+  // Delete custom event handler
+  const handleDeleteEvent = (eventId) => {
+    if (canvas.deleteCustomEvent) {
+      canvas.deleteCustomEvent(eventId);
+    }
+    setCustomEvents((prev) => prev.filter((e) => e.id !== eventId));
+    setSelectedAssignment(null);
+  };
 
   // Navigation Handlers
   const handlePrev = () => {
@@ -119,9 +165,10 @@ export default function Calendar() {
             onPrev={handlePrev}
             onNext={handleNext}
             onToday={handleToday}
-            courses={coursesWithAssignments}
+            courses={allCourses}
             selectedCourseIds={selectedCourseIds}
             onToggleCourse={handleToggleCourse}
+            onAddEvent={() => setIsAddModalOpen(true)}
           />
 
           <div className="calendar-view-container">
@@ -154,7 +201,16 @@ export default function Calendar() {
       <AssignmentModal
         assignment={selectedAssignment}
         onClose={() => setSelectedAssignment(null)}
+        onDelete={selectedAssignment?.isCustom ? handleDeleteEvent : undefined}
+      />
+
+      <AddEventModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleSaveEvent}
+        courses={coursesWithAssignments}
       />
     </section>
   );
 }
+

@@ -10,6 +10,7 @@ export default function CalendarHeader({
   courses,
   selectedCourseIds,
   onToggleCourse,
+  onAddEvent,
 }) {
   const monthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
@@ -30,7 +31,16 @@ export default function CalendarHeader({
         </div>
       </div>
 
-      <div className="calendar-header__right">
+      <div className="calendar-header__right" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <button
+          type="button"
+          className="btn btn--primary"
+          onClick={onAddEvent}
+          style={{ whiteSpace: 'nowrap' }}
+        >
+          + Add Event
+        </button>
+
         <div className="view-mode-toggle" role="group" aria-label="Calendar view switcher">
           <button
             type="button"

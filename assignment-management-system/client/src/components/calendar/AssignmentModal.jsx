@@ -1,6 +1,6 @@
 import { formatDateTime, getCourseColor } from '../../utils/calendarUtils';
 
-export default function AssignmentModal({ assignment, onClose }) {
+export default function AssignmentModal({ assignment, onClose, onDelete }) {
   if (!assignment) return null;
 
   const color = getCourseColor(assignment.courseId);
@@ -52,6 +52,19 @@ export default function AssignmentModal({ assignment, onClose }) {
             >
               Open in Canvas &rarr;
             </a>
+          )}
+          {(assignment.isCustom || onDelete) && (
+            <button
+              type="button"
+              className="btn btn--danger"
+              style={{ backgroundColor: '#ef4444', color: '#fff', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.375rem', cursor: 'pointer' }}
+              onClick={() => {
+                if (onDelete) onDelete(assignment.id);
+                onClose();
+              }}
+            >
+              Delete Event
+            </button>
           )}
           <button type="button" className="btn btn--secondary" onClick={onClose}>
             Close
