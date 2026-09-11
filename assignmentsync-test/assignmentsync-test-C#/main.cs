@@ -18,10 +18,10 @@ namespace assignmentsync_test_C_
             //await m.getCourses();
             //var assignments = await m.returnCourseCalendars("2026", "S2");
 
-            //var assignments = await m.getAssignments();
-            
+            var assignments = await m.getAssignments(true);
 
-            var assignments = await m.searchAssignmentByCourseCode("ENSE707");
+            
+            //var assignments = await m.searchAssignmentByCourseCode("ENSE707");
             foreach (var x in assignments)
             {
                 Console.WriteLine(x);

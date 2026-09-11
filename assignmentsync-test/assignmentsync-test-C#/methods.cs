@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Globalization;
+using System.Net.Http.Headers;
 using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -15,6 +16,14 @@ public class Account
 
     public string URL { get; set; }
     protected string TOKEN { get; private set; }
+
+    protected DateOnly today;
+
+    protected void getDate()
+    {
+        today = DateOnly.FromDateTime(DateTime.Today);
+        Console.WriteLine($"Today: {today}");
+    }
 
     // Set Login Method | Future Use
     public bool SetLogin(string user, string pass)
@@ -115,9 +124,12 @@ public class Account
         return calendarList;
     }
 
+    
+
     // Return All active Assignments
-    public async Task<List<string>> getAssignments()
+    public async Task<List<string>> getAssignments(bool currentDate = false)
     {
+        if (currentDate == true) { getDate(); }
         // Set Page Heading to Canvas Course
         await getCoursePage();
 
@@ -158,8 +170,35 @@ public class Account
                 string dueTimestamp = assignment.TryGetProperty("due_at", out var dueAtEl) ? dueAtEl.GetString() ?? "No due date" : "";
                 // Remove Timestamp
                 string dueDate = dueTimestamp.Split('T')[0];
-                // Append to List
-                assignmentLists.Add($"{name} - {dueDate}");
+                dueDate = dueDate.Replace('-', '/');
+                string date = dueDate;
+
+                if (dueAtEl.GetString() != "No due date" && !string.IsNullOrWhiteSpace(dueDate))
+                {
+                    string[] formattedDate = dueDate.Split('/');
+                    if (formattedDate.Length == 3)
+                    {
+                        date = formattedDate[2] + '/' + formattedDate[1] + '/' + formattedDate[0];
+                    }
+                }
+                
+                if (currentDate == true && dueDate != "No due date")
+                {
+                    // e.g. 07/08/2026
+                    
+                    if (DateOnly.TryParse(date, out DateOnly tempDate) && tempDate > today)
+                    {
+                        // Append to List
+                        assignmentLists.Add($"{name} | {date}");
+                    }
+                }
+                else
+                {
+                    // Append to List
+                    assignmentLists.Add($"{name} | {date}");
+                }
+
+                
             }
         }
         return assignmentLists;
@@ -205,6 +244,7 @@ public class Account
                         string dueTimestamp = assignment.TryGetProperty("due_at", out var dueAtEl) ? dueAtEl.GetString() ?? "No due date" : "";
                         // Remove Timestamp
                         string dueDate = dueTimestamp.Split('T')[0];
+
                         // Append Assignment to list
                         assignmentList.Add($"{name} - {dueDate}");
                     }
@@ -217,6 +257,11 @@ public class Account
 
         }
         return assignmentList;
+    }
+
+    public async Task<List<String>> assignmentPriorityList()
+    {
+        return null;
     }
 }
 
