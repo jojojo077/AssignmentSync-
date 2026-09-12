@@ -22,7 +22,7 @@ public class Account
     protected void getDate()
     {
         today = DateOnly.FromDateTime(DateTime.Today);
-        Console.WriteLine($"Today: {today}");
+        //Console.WriteLine($"Today: {today}");
     }
 
     // Set Login Method | Future Use
@@ -124,8 +124,6 @@ public class Account
         return calendarList;
     }
 
-    
-
     // Return All active Assignments
     public async Task<List<string>> getAssignments(bool currentDate = false)
     {
@@ -140,11 +138,11 @@ public class Account
         {
             if (!course.TryGetProperty("name", out var nameEl)) continue;
             if (!course.TryGetProperty("course_code", out var codeEl)) continue;
-
+            
             string code = codeEl.GetString() ?? "";
             // Extract ID if course aligns with ongoing semester
             if (code.Contains("2026") && code.Contains("S2"))
-            {
+            { 
                 if (course.TryGetProperty("id", out var id))
                 {
                     validCourseCodes.Add(id.GetInt32());
@@ -155,6 +153,7 @@ public class Account
         // iterate through each assignment - by id
         foreach (var courseId in validCourseCodes)
         {
+
             // Change Page Heading to a course based on ID
             string url = $"https://{URL}/api/v1/courses/{courseId}/assignments";
             var response = await _client.GetAsync(url);
@@ -197,8 +196,6 @@ public class Account
                     // Append to List
                     assignmentLists.Add($"{name} | {date}");
                 }
-
-                
             }
         }
         return assignmentLists;
@@ -259,25 +256,70 @@ public class Account
         return assignmentList;
     }
 
-    public async Task<List<String>> assignmentPriorityList()
+    public async Task<List<String>> assignmentPriorityLogic()
     {
+        var assignmentLists = await getAssignments(true);
+
+        //merge sort logic
+        return mergeSort(assignmentLists);
+    }
+
+    private List<String> mergeSort(List<string> items)
+    {
+        if (items.Count <= 1) return items;
+
+        int mid = items.Count / 2;
+        var left = mergeSort(items.GetRange(0, mid));
+        var right = mergeSort(items.GetRange(mid, items.Count - mid));
+
+        return Merge(left, right);
+    }
+
+    private List<string> Merge(List<string> left, List<string> right)
+    {
+        var result = new List<string>();
+        int i = 0, j = 0;
+
+        while (i < left.Count && j < right.Count)
+        {
+            if (compareByDate(left[i], right[j]) <= 0)
+            {
+                result.Add(left[i++]);
+
+            }
+            else
+            {
+                result.Add(right[j++]);
+            }
+        }
+        while (i < left.Count) result.Add(left[i++]);
+        while (j < right.Count) result.Add(right[j++]);
+
+        return result;
+    }
+
+    private int compareByDate(string a, string b)
+    {
+        DateOnly? dateA = extractDate(a);
+        DateOnly? dateB = extractDate(b);
+
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1; // A has no date, goes after B
+        if (dateB == null) return -1; // b has no date, goes before A
+
+        return dateA.Value.CompareTo(dateB.Value);
+    }
+
+    private DateOnly? extractDate(string item)
+    {
+        string[] parts = item.Split('|');
+        if (parts.Length != 2) return null;
+
+        string dateStr = parts[1].Trim();
+        if (dateStr == "No due date") return null;
+
+        if (DateOnly.TryParse(dateStr, out DateOnly result)) return result;
+
         return null;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
