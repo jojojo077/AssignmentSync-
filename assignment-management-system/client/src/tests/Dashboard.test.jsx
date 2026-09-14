@@ -1,3 +1,8 @@
+//Dashboard Test Case
+//Dashboard displaying upcoming assessments, announcements, workload summaries and progress
+//Objective: Provide students with a single view of academic workload
+//Acceptance Criteria: Students can view upcoming deadlines, announcements, workload and progress from one dashboard
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import Dashboard from '../pages/Dashboard';
@@ -14,7 +19,7 @@ describe('Dashboard Component', () => {
     vi.clearAllMocks();
   });
 
-  // Test Case: Successful fetch displays course list and assignment count
+  //UT1: Successful fetch displays course list and assignment count
   it('renders list of courses and their assignment count on success', async () => {
     const mockData = [
       {
@@ -35,7 +40,7 @@ describe('Dashboard Component', () => {
     });
   });
 
-  // Test Case : API error displays error alert
+  //UT2: API error displays error alert
   it('renders error alert when fetching assignments fails', async () => {
     canvas.getUpcomingAssignments.mockRejectedValue(new Error('Network error'));
 
