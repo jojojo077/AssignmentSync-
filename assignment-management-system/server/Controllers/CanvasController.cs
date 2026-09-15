@@ -31,4 +31,30 @@ public class CanvasController(ICanvasService canvasService) : ControllerBase
         var data = await canvasService.GetRecentAnnouncementsAsync();
         return Ok(data);
     }
+
+    [HttpGet("events")]
+    public async Task<IActionResult> GetCalendarEvents()
+    {
+        var data = await canvasService.GetCalendarEventsAsync();
+        return Ok(data);
+    }
+
+    [HttpPost("events")]
+    public async Task<IActionResult> CreateCalendarEvent([FromBody] Models.CreateCalendarEventRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return BadRequest(new { message = "Event title is required." });
+        }
+
+        var created = await canvasService.CreateCalendarEventAsync(request);
+        return Ok(created);
+    }
+
+    [HttpDelete("events/{id}")]
+    public async Task<IActionResult> DeleteCalendarEvent(long id)
+    {
+        var success = await canvasService.DeleteCalendarEventAsync(id);
+        return Ok(new { success, id });
+    }
 }

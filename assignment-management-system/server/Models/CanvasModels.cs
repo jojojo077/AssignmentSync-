@@ -82,3 +82,66 @@ public class CanvasAnnouncement
     public string? CourseName { get; set; }
 }
 
+/// <summary>Canvas user profile representation.</summary>
+public class CanvasUserProfile
+{
+    public long Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+}
+
+/// <summary>Payload sent by the client to create a calendar event.</summary>
+public class CreateCalendarEventRequest
+{
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("due_at")]
+    public DateTimeOffset? DueAt { get; set; }
+
+    [JsonPropertyName("courseId")]
+    public long? CourseId { get; set; }
+
+    [JsonPropertyName("courseName")]
+    public string? CourseName { get; set; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+}
+
+/// <summary>Subset of Canvas's Calendar Event object.</summary>
+public class CanvasCalendarEvent
+{
+    public long Id { get; set; }
+
+    public string Title { get; set; } = string.Empty;
+
+    [JsonPropertyName("start_at")]
+    public DateTimeOffset? StartAt { get; set; }
+
+    [JsonPropertyName("end_at")]
+    public DateTimeOffset? EndAt { get; set; }
+
+    public string? Description { get; set; }
+
+    [JsonPropertyName("context_code")]
+    public string? ContextCode { get; set; }
+
+    [JsonPropertyName("workflow_state")]
+    public string? WorkflowState { get; set; }
+
+    [JsonPropertyName("html_url")]
+    public string? HtmlUrl { get; set; }
+
+    // Client-convenience fields
+    [JsonPropertyName("courseId")]
+    public long? CourseId { get; set; }
+
+    [JsonPropertyName("courseName")]
+    public string? CourseName { get; set; }
+
+    [JsonPropertyName("isCustom")]
+    public bool IsCustom { get; set; } = true;
+}
+
+

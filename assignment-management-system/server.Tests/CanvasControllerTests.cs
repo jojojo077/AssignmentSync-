@@ -54,4 +54,21 @@ public class CanvasControllerTests(WebApplicationFactory<Program> factory) : ICl
         Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
         Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
     }
+
+    [Fact]
+    public async Task GetEvents_WithoutAuthHeader_StillReachesController()
+    {
+        var response = await _client.GetAsync("/api/canvas/events");
+
+        Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task CreateEvent_WithMissingName_ReturnsBadRequest()
+    {
+        var response = await _client.PostAsJsonAsync("/api/canvas/events", new { name = "" });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }

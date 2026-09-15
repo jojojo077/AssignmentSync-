@@ -171,4 +171,155 @@ public class CanvasService : ICanvasService
             return [];
         }
     }
+
+    /// <summary>
+    /// Creates a calendar event directly in Canvas LMS via POST /api/v1/calendar_events.
+    /// If creating in a course calendar is forbidden (student token), falls back to the user's personal calendar.
+    /// </summary>
+    public async Task<CanvasCalendarEvent> CreateCalendarEventAsync(CreateCalendarEventRequest request)
+    {
+        EnsureConfigured();
+
+        string? contextCode = null;
+
+        if (request.CourseId.HasValue && request.CourseId.Value != 99999)
+        {
+            contextCode = $"course_{request.CourseId.Value}";
+        }
+        else
+        {
+            try
+            {
+                var user = await GetJsonOrThrowAsync<CanvasUserProfile>("users/self");
+                if (user != null && user.Id > 0)
+                {
+                    contextCode = $"user_{user.Id}";
+                }
+            }
+            catch
+            {
+                // Canvas will default to current user if context_code is not specified
+            }
+        }
+
+        var payload = new Dictionary<string, object?>
+        {
+            ["calendar_event"] = new Dictionary<string, object?>
+            {
+                ["title"] = request.Name,
+                ["start_at"] = request.DueAt?.ToString("o"),
+                ["end_at"] = request.DueAt?.AddHours(1).ToString("o") ?? request.DueAt?.ToString("o"),
+                ["description"] = request.Description ?? "",
+                ["context_code"] = contextCode
+            }
+        };
+
+        var response = await _http.PostAsJsonAsync("calendar_events", payload);
+
+        // If course context returned 401 or 403 (student not permitted to post course-wide event), fall back to personal calendar
+        if (!response.IsSuccessStatusCode &&
+            (response.StatusCode == System.Net.HttpStatusCode.Unauthorized || response.StatusCode == System.Net.HttpStatusCode.Forbidden) &&
+            contextCode != null && contextCode.StartsWith("course_"))
+        {
+            string? userContext = null;
+            try
+            {
+                var user = await GetJsonOrThrowAsync<CanvasUserProfile>("users/self");
+                if (user != null && user.Id > 0)
+                {
+                    userContext = $"user_{user.Id}";
+                }
+            }
+            catch { }
+
+            var fallbackPayload = new Dictionary<string, object?>
+            {
+                ["calendar_event"] = new Dictionary<string, object?>
+                {
+                    ["title"] = request.Name,
+                    ["start_at"] = request.DueAt?.ToString("o"),
+                    ["end_at"] = request.DueAt?.AddHours(1).ToString("o") ?? request.DueAt?.ToString("o"),
+                    ["description"] = request.Description ?? "",
+                    ["context_code"] = userContext
+                }
+            };
+
+            response = await _http.PostAsJsonAsync("calendar_events", fallbackPayload);
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            throw new ApiException((int)response.StatusCode, $"Failed to create calendar event in Canvas: {errorBody}");
+        }
+
+        var createdEvent = await response.Content.ReadFromJsonAsync<CanvasCalendarEvent>();
+        if (createdEvent == null)
+        {
+            throw new ApiException(500, "Canvas returned empty response for created calendar event.");
+        }
+
+        createdEvent.CourseId = request.CourseId ?? 99999;
+        createdEvent.CourseName = !string.IsNullOrWhiteSpace(request.CourseName) ? request.CourseName : "Personal Event";
+        createdEvent.IsCustom = true;
+
+        return createdEvent;
+    }
+
+    /// <summary>
+    /// Deletes a calendar event in Canvas LMS via DELETE /api/v1/calendar_events/{eventId}.
+    /// Treats 404 as success (since the event is already deleted on Canvas).
+    /// </summary>
+    public async Task<bool> DeleteCalendarEventAsync(long eventId)
+    {
+        EnsureConfigured();
+
+        var response = await _http.DeleteAsync($"calendar_events/{eventId}");
+        return response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NotFound;
+    }
+
+    /// <summary>
+    /// Fetches calendar events for the student across all enrolled courses and personal calendar.
+    /// Excludes any events with workflow_state == 'deleted'.
+    /// </summary>
+    public async Task<IReadOnlyList<CanvasCalendarEvent>> GetCalendarEventsAsync()
+    {
+        EnsureConfigured();
+
+        try
+        {
+            var events = await GetJsonOrThrowAsync<List<CanvasCalendarEvent>>(
+                "calendar_events?type=event&all_events=true&per_page=100") ?? [];
+
+            // Filter out any deleted events
+            events = events
+                .Where(ev => !string.Equals(ev.WorkflowState, "deleted", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            foreach (var ev in events)
+            {
+                ev.IsCustom = true;
+                if (ev.ContextCode != null && ev.ContextCode.StartsWith("course_") &&
+                    long.TryParse(ev.ContextCode.Replace("course_", ""), out var cId))
+                {
+                    ev.CourseId = cId;
+                }
+                else
+                {
+                    ev.CourseId = 99999;
+                    ev.CourseName = "Personal Event";
+                }
+            }
+
+            return events;
+        }
+        catch (ApiException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            return [];
+        }
+    }
 }

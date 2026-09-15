@@ -11,6 +11,7 @@ export default function CalendarHeader({
   selectedCourseIds,
   onToggleCourse,
   onAddEvent,
+  onSync,
 }) {
   const monthName = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
@@ -32,6 +33,17 @@ export default function CalendarHeader({
       </div>
 
       <div className="calendar-header__right" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        {onSync && (
+          <button
+            type="button"
+            className="btn btn--outline"
+            onClick={onSync}
+            title="Sync with Canvas LMS"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            ↻ Sync
+          </button>
+        )}
         <button
           type="button"
           className="btn btn--primary"

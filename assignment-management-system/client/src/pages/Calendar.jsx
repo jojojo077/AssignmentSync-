@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { canvas } from '../services/api';
 import CalendarHeader from '../components/calendar/CalendarHeader';
 import MonthView from '../components/calendar/MonthView';
@@ -17,34 +17,73 @@ export default function Calendar() {
   const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    setStatus('loading');
+  // Synchronize both Canvas calendar events and assignments
+  const fetchCalendarData = useCallback(() => {
+    // 1. Fetch remote Canvas calendar events
+    if (canvas && typeof canvas.getCalendarEvents === 'function') {
+      canvas
+        .getCalendarEvents()
+        .then((res) => {
+          const liveCanvasEvents = (res.data || []).map((e) => ({
+            id: e.id,
+            name: e.title || e.name,
+            due_at: e.start_at || e.due_at,
+            courseId: e.courseId || 99999,
+            courseName: e.courseName || 'Personal Event',
+            html_url: e.html_url,
+            isCustom: true,
+          }));
 
-    // Load local/saved custom events via canvas API
-    const loadedCustomEvents = canvas.getCustomEvents ? canvas.getCustomEvents() : [];
-    setCustomEvents(loadedCustomEvents);
+          // Prune any stale Canvas events from localStorage
+          const retainedLocalDrafts = canvas.pruneStaleCanvasEvents
+            ? canvas.pruneStaleCanvasEvents(liveCanvasEvents)
+            : [];
 
+          // Merge live Canvas events + purely offline drafts (starting with custom_)
+          const offlineDrafts = retainedLocalDrafts.filter((e) => String(e.id).startsWith('custom_'));
+          setCustomEvents([...liveCanvasEvents, ...offlineDrafts]);
+        })
+        .catch(() => {
+          const loadedCustomEvents = canvas.getCustomEvents ? canvas.getCustomEvents() : [];
+          setCustomEvents(loadedCustomEvents);
+        });
+    } else {
+      const loadedCustomEvents = canvas.getCustomEvents ? canvas.getCustomEvents() : [];
+      setCustomEvents(loadedCustomEvents);
+    }
+
+    // 2. Fetch assignments
     canvas
       .getUpcomingAssignments()
       .then((res) => {
-        if (!cancelled) {
-          const data = res.data || [];
-          setCoursesWithAssignments(data);
-          // Default to selecting all Canvas courses + custom events (99999)
-          const allIds = [...data.map((c) => c.courseId), 99999];
-          setSelectedCourseIds(allIds);
-          setStatus('ready');
-        }
+        const data = res.data || [];
+        setCoursesWithAssignments(data);
+        setSelectedCourseIds((prev) => {
+          if (prev.length === 0) {
+            return [...data.map((c) => c.courseId), 99999];
+          }
+          return prev;
+        });
+        setStatus('ready');
       })
       .catch(() => {
-        if (!cancelled) setStatus('error');
+        setStatus('error');
       });
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    setStatus('loading');
+    fetchCalendarData();
+
+    // Auto-sync when returning to the tab (e.g. after modifying/deleting on Canvas LMS)
+    const onFocus = () => {
+      fetchCalendarData();
+    };
+    window.addEventListener('focus', onFocus);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [fetchCalendarData]);
 
   // Combine Canvas courses with custom events pseudo-course
   const allCourses = useMemo(() => {
@@ -99,13 +138,15 @@ export default function Calendar() {
     }
   };
 
-  // Delete custom event handler
-  const handleDeleteEvent = (eventId) => {
-    if (canvas.deleteCustomEvent) {
-      canvas.deleteCustomEvent(eventId);
-    }
-    setCustomEvents((prev) => prev.filter((e) => e.id !== eventId));
+  // Delete custom event handler (deletes from Canvas and local state)
+  const handleDeleteEvent = async (eventId) => {
+    // Optimistically remove from state immediately using string comparison
+    setCustomEvents((prev) => prev.filter((e) => String(e.id) !== String(eventId)));
     setSelectedAssignment(null);
+
+    if (canvas.deleteCustomEvent) {
+      await canvas.deleteCustomEvent(eventId);
+    }
   };
 
   // Navigation Handlers
@@ -169,6 +210,7 @@ export default function Calendar() {
             selectedCourseIds={selectedCourseIds}
             onToggleCourse={handleToggleCourse}
             onAddEvent={() => setIsAddModalOpen(true)}
+            onSync={fetchCalendarData}
           />
 
           <div className="calendar-view-container">

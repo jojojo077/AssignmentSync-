@@ -28,6 +28,7 @@ export const canvas = {
   getCourses: () => api.get('/canvas/courses'),
   getUpcomingAssignments: () => api.get('/canvas/assignments'),
   getAnnouncements: () => api.get('/canvas/announcements'),
+  getCalendarEvents: () => api.get('/canvas/events'),
   getCustomEvents: () => {
     try {
       const stored = localStorage.getItem('ams_custom_events');
@@ -36,34 +37,94 @@ export const canvas = {
       return [];
     }
   },
-  addEvent: (eventData) => {
-    const newEvent = {
-      id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-      name: eventData.name,
-      due_at: eventData.due_at,
-      courseId: eventData.courseId || 99999,
-      courseName: eventData.courseName || 'Personal Event',
-      points_possible: eventData.points_possible !== undefined && eventData.points_possible !== '' ? Number(eventData.points_possible) : null,
-      isCustom: true,
-    };
+  addEvent: async (eventData) => {
     try {
-      const existing = canvas.getCustomEvents();
-      const updated = [...existing, newEvent];
-      localStorage.setItem('ams_custom_events', JSON.stringify(updated));
-    } catch (e) {
-      console.error('Failed to save event to local storage:', e);
+      // Attempt to persist directly to Canvas LMS API via backend
+      const res = await api.post('/canvas/events', eventData);
+      const canvasEvent = res.data;
+      const formattedEvent = {
+        id: canvasEvent.id,
+        name: canvasEvent.title || eventData.name,
+        due_at: canvasEvent.start_at || eventData.due_at,
+        courseId: canvasEvent.courseId || eventData.courseId || 99999,
+        courseName: canvasEvent.courseName || eventData.courseName || 'Personal Event',
+        points_possible:
+          eventData.points_possible !== undefined && eventData.points_possible !== ''
+            ? Number(eventData.points_possible)
+            : null,
+        html_url: canvasEvent.html_url,
+        isCustom: true,
+      };
+
+      // Also save to localStorage for offline cache
+      try {
+        const existing = canvas.getCustomEvents().filter((e) => String(e.id) !== String(formattedEvent.id));
+        localStorage.setItem('ams_custom_events', JSON.stringify([...existing, formattedEvent]));
+      } catch (e) {
+        console.error('Failed to cache event to local storage:', e);
+      }
+
+      return { data: formattedEvent };
+    } catch (err) {
+      console.warn('Canvas API event creation failed or offline, using local storage fallback:', err);
+      const fallbackEvent = {
+        id: `custom_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+        name: eventData.name,
+        due_at: eventData.due_at,
+        courseId: eventData.courseId || 99999,
+        courseName: eventData.courseName || 'Personal Event',
+        points_possible:
+          eventData.points_possible !== undefined && eventData.points_possible !== ''
+            ? Number(eventData.points_possible)
+            : null,
+        isCustom: true,
+      };
+      try {
+        const existing = canvas.getCustomEvents();
+        const updated = [...existing, fallbackEvent];
+        localStorage.setItem('ams_custom_events', JSON.stringify(updated));
+      } catch (e) {
+        console.error('Failed to save event to local storage fallback:', e);
+      }
+      return { data: fallbackEvent };
     }
-    return Promise.resolve({ data: newEvent });
   },
-  deleteCustomEvent: (eventId) => {
+  deleteCustomEvent: async (eventId) => {
+    // If ID is a numeric Canvas ID (or string of digits), call backend delete
+    const cleanId = typeof eventId === 'string' ? eventId.replace(/^custom_/, '') : eventId;
+    if (typeof cleanId === 'number' || /^\d+$/.test(String(cleanId))) {
+      try {
+        await api.delete(`/canvas/events/${cleanId}`);
+      } catch (err) {
+        console.warn('Failed to delete event from Canvas API:', err);
+      }
+    }
     try {
       const existing = canvas.getCustomEvents();
-      const updated = existing.filter((e) => e.id !== eventId);
+      const updated = existing.filter(
+        (e) => String(e.id) !== String(eventId) && String(e.id) !== String(cleanId)
+      );
       localStorage.setItem('ams_custom_events', JSON.stringify(updated));
     } catch (e) {
       console.error('Failed to delete event from local storage:', e);
     }
-    return Promise.resolve({ data: eventId });
+    return { data: eventId };
+  },
+  pruneStaleCanvasEvents: (activeCanvasEvents = []) => {
+    try {
+      const activeIds = new Set(activeCanvasEvents.map((e) => String(e.id)));
+      const stored = canvas.getCustomEvents();
+      // Keep purely offline drafts (starting with custom_) OR events still present in activeCanvasEvents
+      const updated = stored.filter((e) => {
+        const idStr = String(e.id);
+        if (idStr.startsWith('custom_')) return true;
+        return activeIds.has(idStr);
+      });
+      localStorage.setItem('ams_custom_events', JSON.stringify(updated));
+      return updated;
+    } catch {
+      return [];
+    }
   },
 };
 
