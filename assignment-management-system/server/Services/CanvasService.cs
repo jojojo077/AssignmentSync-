@@ -119,4 +119,56 @@ public class CanvasService : ICanvasService
             Assignments = assignmentLists[i],
         }).ToList();
     }
+
+    /// <summary>
+    /// Fetch recent announcements across all active courses.
+    /// Uses Canvas's announcements endpoint with context_codes for enrolled courses.
+    /// </summary>
+    public async Task<IReadOnlyList<CanvasAnnouncement>> GetRecentAnnouncementsAsync()
+    {
+        EnsureConfigured();
+
+        var courses = await GetCoursesAsync();
+        if (courses.Count == 0)
+        {
+            return [];
+        }
+
+        var courseMap = courses.ToDictionary(c => $"course_{c.Id}", c => c);
+        var queryParams = string.Join("&", courses.Select(c => $"context_codes[]=course_{c.Id}"));
+
+        try
+        {
+            var announcements = await GetJsonOrThrowAsync<List<CanvasAnnouncement>>(
+                $"announcements?{queryParams}&per_page=30") ?? [];
+
+            foreach (var announcement in announcements)
+            {
+                if (!string.IsNullOrEmpty(announcement.ContextCode) &&
+                    courseMap.TryGetValue(announcement.ContextCode, out var matchedCourse))
+                {
+                    announcement.CourseId = matchedCourse.Id;
+                    announcement.CourseName = matchedCourse.Name;
+                }
+
+                // If user_name is null, fallback to author display name
+                if (string.IsNullOrEmpty(announcement.UserName) && announcement.Author?.DisplayName != null)
+                {
+                    announcement.UserName = announcement.Author.DisplayName;
+                }
+            }
+
+            return announcements
+                .OrderByDescending(a => a.PostedAt ?? DateTimeOffset.MinValue)
+                .ToList();
+        }
+        catch (ApiException)
+        {
+            throw;
+        }
+        catch (Exception)
+        {
+            return [];
+        }
+    }
 }

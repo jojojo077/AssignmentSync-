@@ -40,3 +40,45 @@ public class CourseWithAssignments
 
     public IReadOnlyList<CanvasAssignment> Assignments { get; set; } = [];
 }
+
+/// <summary>Author metadata on Canvas announcements.</summary>
+public class CanvasAuthor
+{
+    [JsonPropertyName("display_name")]
+    public string? DisplayName { get; set; }
+
+    [JsonPropertyName("avatar_image_url")]
+    public string? AvatarImageUrl { get; set; }
+}
+
+/// <summary>Subset of Canvas's announcement / discussion topic object.</summary>
+public class CanvasAnnouncement
+{
+    public long Id { get; set; }
+
+    public string Title { get; set; } = string.Empty;
+
+    public string Message { get; set; } = string.Empty;
+
+    [JsonPropertyName("posted_at")]
+    public DateTimeOffset? PostedAt { get; set; }
+
+    [JsonPropertyName("context_code")]
+    public string? ContextCode { get; set; }
+
+    [JsonPropertyName("user_name")]
+    public string? UserName { get; set; }
+
+    public CanvasAuthor? Author { get; set; }
+
+    [JsonPropertyName("html_url")]
+    public string? HtmlUrl { get; set; }
+
+    [JsonPropertyName("read_state")]
+    public string? ReadState { get; set; }
+
+    public long? CourseId { get; set; }
+
+    public string? CourseName { get; set; }
+}
+

@@ -9,4 +9,5 @@ public interface ICanvasService
     Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId);
 
     Task<IReadOnlyList<CourseWithAssignments>> GetAllUpcomingAssignmentsAsync();
+    Task<IReadOnlyList<CanvasAnnouncement>> GetRecentAnnouncementsAsync();
 }

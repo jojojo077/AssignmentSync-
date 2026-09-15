@@ -27,6 +27,7 @@ export const health = {
 export const canvas = {
   getCourses: () => api.get('/canvas/courses'),
   getUpcomingAssignments: () => api.get('/canvas/assignments'),
+  getAnnouncements: () => api.get('/canvas/announcements'),
   getCustomEvents: () => {
     try {
       const stored = localStorage.getItem('ams_custom_events');

@@ -24,4 +24,11 @@ public class CanvasController(ICanvasService canvasService) : ControllerBase
         var data = await canvasService.GetAllUpcomingAssignmentsAsync();
         return Ok(data);
     }
+
+    [HttpGet("announcements")]
+    public async Task<IActionResult> GetRecentAnnouncements()
+    {
+        var data = await canvasService.GetRecentAnnouncementsAsync();
+        return Ok(data);
+    }
 }
