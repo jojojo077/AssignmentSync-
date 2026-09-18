@@ -26,7 +26,7 @@ body {
 }
 
 .app-shell__content {
-  max-width: 1200px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
@@ -848,12 +848,18 @@ body {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
+  grid-template-columns: 1.15fr 1fr 1fr;
   gap: 1.5rem;
   align-items: start;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
@@ -897,6 +903,15 @@ body {
   border-radius: 999px;
   background: #e0f2fe;
   color: #0369a1;
+}
+
+.dashboard-card__count-tag--green {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.dashboard-stat-badge--progress .dashboard-stat-badge__val--green {
+  color: #15803d;
 }
 
 .dashboard-card__content {
@@ -1257,3 +1272,275 @@ body {
   }
 }
 
+/* ==========================================================================
+   Semester Progress Widget
+   ========================================================================== */
+
+.progress-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Hero stat */
+.progress-widget__hero {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.progress-widget__pct {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.progress-widget__sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Overall progress bar */
+.progress-bar-track {
+  height: 12px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, #10b981 100%);
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 2px;
+}
+
+/* Motivational badge */
+.progress-motivation {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  align-self: flex-start;
+}
+
+.progress-motivation--complete  { background: #dcfce7; color: #15803d; }
+.progress-motivation--great     { background: #fef3c7; color: #92400e; }
+.progress-motivation--good      { background: #e0f2fe; color: #0369a1; }
+.progress-motivation--early     { background: #ede9fe; color: #6d28d9; }
+.progress-motivation--start     { background: #f1f5f9; color: #475569; }
+
+/* Per-course breakdown */
+.course-progress-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.course-progress-section__heading {
+  margin: 0 0 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.course-progress-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.course-progress-item__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.course-progress-item__name {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 80%;
+}
+
+.course-progress-item__fraction {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.course-progress-mini-track {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.course-progress-mini-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, #10b981 100%);
+  transition: width 0.5s ease;
+  min-width: 2px;
+}
+
+/* Interactive checklist */
+.progress-checklist {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.progress-checklist__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.progress-checklist__heading {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.progress-checklist__filters {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.checklist-filter-btn {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: #f8fafc;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.checklist-filter-btn--active {
+  background: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
+}
+
+.checklist-filter-btn:hover:not(.checklist-filter-btn--active) {
+  background: #e2e8f0;
+  color: var(--text-main);
+}
+
+.progress-checklist__empty {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.75rem 0;
+  margin: 0;
+}
+
+.progress-checklist__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.progress-checklist__list::-webkit-scrollbar { width: 4px; }
+.progress-checklist__list::-webkit-scrollbar-track { background: transparent; }
+.progress-checklist__list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 999px; }
+
+.checklist-item {
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  transition: border-color 0.15s, opacity 0.15s;
+}
+
+.checklist-item--done {
+  opacity: 0.6;
+}
+
+.checklist-item__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.checklist-item__checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checklist-item__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.checklist-item--done .checklist-item__name {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.checklist-item__meta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.2rem;
+  padding-left: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.checklist-item__course {
+  font-size: 0.7rem;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+.checklist-item__due {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}

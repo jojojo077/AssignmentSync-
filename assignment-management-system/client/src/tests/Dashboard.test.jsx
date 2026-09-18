@@ -4,7 +4,7 @@
 //Acceptance Criteria: Students can view upcoming deadlines, announcements, workload and progress from one dashboard
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import Dashboard from '../pages/Dashboard';
 import { canvas } from '../services/api';
 
@@ -12,12 +12,16 @@ vi.mock('../services/api', () => ({
   canvas: {
     getUpcomingAssignments: vi.fn(),
     getAnnouncements: vi.fn(),
+    getCompletedAssignments: vi.fn(() => []),
+    setCompletedAssignments: vi.fn(),
+    toggleAssignmentCompleted: vi.fn(),
   },
 }));
 
 describe('Dashboard Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    canvas.getCompletedAssignments.mockReturnValue([]);
   });
 
   //UT1: Successful fetch displays course list and assignment count
@@ -37,7 +41,9 @@ describe('Dashboard Component', () => {
     expect(screen.getByText(/loading assignments…/i)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText(/Software Quality Assurance/i)).toBeInTheDocument();
+      // getAllByText because course name appears in both workload and progress columns
+      const courseNames = screen.getAllByText(/Software Quality Assurance/i);
+      expect(courseNames.length).toBeGreaterThan(0);
       expect(screen.getByText(/2 assignment\(s\)/i)).toBeInTheDocument();
     });
   });
@@ -50,9 +56,10 @@ describe('Dashboard Component', () => {
     render(<Dashboard />);
 
     await waitFor(() => {
-      const alertElement = screen.getByRole('alert');
-      expect(alertElement).toBeInTheDocument();
-      expect(alertElement).toHaveTextContent(/couldn[’']t load assignments/i);
+      const alertElements = screen.getAllByRole('alert');
+      expect(alertElements.length).toBeGreaterThan(0);
+      const assignmentsAlert = alertElements.find(el => el.textContent.includes("load assignments"));
+      expect(assignmentsAlert).toBeTruthy();
     });
   });
 
@@ -117,7 +124,8 @@ describe('Dashboard Component', () => {
     render(<Dashboard />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Software Quality Assurance/i)).toBeInTheDocument();
+      const courseNames = screen.getAllByText(/Software Quality Assurance/i);
+      expect(courseNames.length).toBeGreaterThan(0);
       expect(screen.getByText(/could not load announcements at this time/i)).toBeInTheDocument();
     });
   });
@@ -139,7 +147,6 @@ describe('Dashboard Component', () => {
     canvas.getUpcomingAssignments.mockResolvedValue({ data: mockAssignments });
     canvas.getAnnouncements.mockResolvedValue({ data: mockAnnouncements });
 
-    const { fireEvent } = await import('@testing-library/react');
     render(<Dashboard />);
 
     await waitFor(() => {
@@ -153,9 +160,111 @@ describe('Dashboard Component', () => {
     expect(dialog).toBeInTheDocument();
     expect(within(dialog).getByText(/Detailed announcement body text/i)).toBeInTheDocument();
 
-    // Click Close
-    fireEvent.click(within(dialog).getByRole('button', { name: /^Close$/i }));
+    // Click Close — use the footer Close button (btn--secondary), not the modal header one
+    const closeButtons = screen.getAllByRole('button', { name: /^Close$/i });
+    fireEvent.click(closeButtons[closeButtons.length - 1]);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
-});
 
+  //UT7: Semester progress column is rendered with correct heading
+  it('renders the semester progress column with heading and progress bar', async () => {
+    const mockData = [
+      {
+        courseId: 101,
+        courseName: 'Software Quality Assurance',
+        assignments: [
+          { id: 1, name: 'Assignment 1', due_at: '2026-09-20T23:59:00Z' },
+          { id: 2, name: 'Assignment 2', due_at: '2026-10-01T23:59:00Z' },
+        ],
+      },
+    ];
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: mockData });
+    canvas.getAnnouncements.mockResolvedValue({ data: [] });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: /semester progress/i })).toBeInTheDocument();
+      // Progress bar should be present with role="progressbar"
+      const progressBar = screen.getByRole('progressbar');
+      expect(progressBar).toBeInTheDocument();
+      expect(progressBar).toHaveAttribute('aria-valuenow', '0');
+      expect(progressBar).toHaveAttribute('aria-valuemax', '100');
+    });
+  });
+
+  //UT8: Toggling assignment updates progress count
+  it('updates completed count when an assignment checkbox is toggled', async () => {
+    const mockData = [
+      {
+        courseId: 101,
+        courseName: 'Software Quality Assurance',
+        assignments: [
+          { id: 1, name: 'Assignment 1', due_at: '2026-09-20T23:59:00Z' },
+          { id: 2, name: 'Assignment 2', due_at: '2026-10-01T23:59:00Z' },
+        ],
+      },
+    ];
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: mockData });
+    canvas.getAnnouncements.mockResolvedValue({ data: [] });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      // Initially 0% complete
+      const progressBar = screen.getByRole('progressbar');
+      expect(progressBar).toHaveAttribute('aria-valuenow', '0');
+    });
+
+    // Check off Assignment 1
+    const checkbox = screen.getByRole('checkbox', { name: /mark assignment 1 as complete/i });
+    fireEvent.click(checkbox);
+
+    await waitFor(() => {
+      // Progress should now be 50% (1 of 2)
+      const progressBar = screen.getByRole('progressbar');
+      expect(progressBar).toHaveAttribute('aria-valuenow', '50');
+    });
+  });
+
+  //UT9: Per-course breakdown shows correct course names
+  it('renders per-course progress breakdown with correct course names', async () => {
+    const mockData = [
+      {
+        courseId: 101,
+        courseName: 'Software Quality Assurance',
+        assignments: [{ id: 1, name: 'Assignment 1' }],
+      },
+      {
+        courseId: 202,
+        courseName: 'Data Structures',
+        assignments: [{ id: 3, name: 'Lab 1' }, { id: 4, name: 'Lab 2' }],
+      },
+    ];
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: mockData });
+    canvas.getAnnouncements.mockResolvedValue({ data: [] });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      // Both courses should appear in the per-course breakdown section (getAllByText as they appear in multiple places)
+      const progressSection = screen.getByRole('region', { name: /semester assignment progress/i });
+      const sqaMatches = within(progressSection).getAllByText(/Software Quality Assurance/i);
+      expect(sqaMatches.length).toBeGreaterThan(0);
+      const dsMatches = within(progressSection).getAllByText(/Data Structures/i);
+      expect(dsMatches.length).toBeGreaterThan(0);
+    });
+  });
+
+  //UT10: Empty progress state when there are no assignments
+  it('shows an empty state in progress column when no assignments exist', async () => {
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: [] });
+    canvas.getAnnouncements.mockResolvedValue({ data: [] });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/no assignments to track/i)).toBeInTheDocument();
+    });
+  });
+});
