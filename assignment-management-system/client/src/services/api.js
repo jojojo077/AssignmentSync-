@@ -25,11 +25,12 @@ export const health = {
 };
 
 export const canvas = {
-  getCourses: () => api.get('/canvas/courses'),
-  getUpcomingAssignments: () => api.get('/canvas/assignments'),
-  getAnnouncements: () => api.get('/canvas/announcements'),
-  getCalendarEvents: () => api.get('/canvas/events'),
-  getCustomEvents: () => {
+    getCourses: () => api.get('/canvas/courses'),
+    getUpcomingAssignments: () => api.get('/canvas/assignments'),
+    searchAssignmentsByCourseCode: (courseCode) => api.get('/canvas/assignments/search', { params: { courseCode } }),
+    getAnnouncements: () => api.get('/canvas/announcements'),
+    getCalendarEvents: () => api.get('/canvas/events'),
+    getCustomEvents: () => {
     try {
       const stored = localStorage.getItem('ams_custom_events');
       return stored ? JSON.parse(stored) : [];

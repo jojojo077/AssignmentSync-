@@ -38,7 +38,7 @@ describe('Dashboard Component', () => {
 
     render(<Dashboard />);
 
-    expect(screen.getByText(/loading assignments…/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading assignments.../i)).toBeInTheDocument();
 
     await waitFor(() => {
       // getAllByText because course name appears in both workload and progress columns

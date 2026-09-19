@@ -5,7 +5,7 @@ namespace AMS.Api.Controllers;
 
 // TODO: put [RequireAuth] (or [Authorize] once real JWT auth is wired up)
 // back on this controller once AuthController actually issues tokens.
-// Left open for now — with no login flow yet, the client has no token to
+// Left open for now - with no login flow yet, the client has no token to
 // send, so a guard here just blocks every request with 401.
 [ApiController]
 [Route("api/canvas")]
@@ -22,6 +22,18 @@ public class CanvasController(ICanvasService canvasService) : ControllerBase
     public async Task<IActionResult> GetUpcomingAssignments()
     {
         var data = await canvasService.GetAllUpcomingAssignmentsAsync();
+        return Ok(data);
+    }
+
+    [HttpGet("assignments/search")]
+    public async Task<IActionResult> SearchAssignmentsByCourseCode([FromQuery] string courseCode)
+    {
+        if (string.IsNullOrWhiteSpace(courseCode))
+        {
+            return BadRequest(new { message = "courseCode query parameter is required." });
+        }
+
+        var data = await canvasService.SearchAssignmentsByCourseCodeAsync(courseCode);
         return Ok(data);
     }
 

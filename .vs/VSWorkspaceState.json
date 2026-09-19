@@ -1,9 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\assignmentsync-test",
-    "\\assignmentsync-test\\assignmentsync-test-C#"
+    "\\assignment-management-system",
+    "\\assignment-management-system\\client",
+    "\\assignment-management-system\\client\\src",
+    "\\assignment-management-system\\client\\src\\components",
+    "\\assignment-management-system\\client\\src\\components\\layout",
+    "\\assignment-management-system\\client\\src\\services",
+    "\\assignment-management-system\\server",
+    "\\assignment-management-system\\server\\Controllers",
+    "\\assignment-management-system\\server\\Models"
   ],
-  "SelectedNode": "\\assignmentsync-test\\assignmentsync-test-C#\\methods.cs",
+  "SelectedNode": "\\assignment-management-system\\server\\Controllers\\CanvasController.cs",
   "PreviewInSolutionExplorer": false
 }

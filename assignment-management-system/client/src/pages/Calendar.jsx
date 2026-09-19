@@ -185,7 +185,7 @@ export default function Calendar() {
         <p>View coursework, deadlines, and manage your academic workload.</p>
       </div>
 
-      {status === 'loading' && <p className="calendar-status">Loading calendar data…</p>}
+          {status === 'loading' && <p className="calendar-status">Loading calendar data...</p>}
 
       {status === 'error' && (
         <div className="calendar-error" role="alert">
