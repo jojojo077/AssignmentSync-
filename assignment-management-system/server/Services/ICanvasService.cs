@@ -9,6 +9,9 @@ public interface ICanvasService
     Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId);
 
     Task<IReadOnlyList<CourseWithAssignments>> GetAllUpcomingAssignmentsAsync();
+
+    Task<IReadOnlyList<CourseWithAssignments>> SearchAssignmentByCourseCodeAsync(string courseCode);
+
     Task<IReadOnlyList<CanvasAnnouncement>> GetRecentAnnouncementsAsync();
     Task<CanvasCalendarEvent> CreateCalendarEventAsync(CreateCalendarEventRequest request);
     Task<bool> DeleteCalendarEventAsync(long eventId);

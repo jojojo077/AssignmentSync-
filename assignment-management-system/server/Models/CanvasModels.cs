@@ -8,6 +8,9 @@ public class CanvasCourse
     public long Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("course_code")]
+    public string? CourseCode { get; set; }
 }
 
 /// <summary>Subset of Canvas's assignment object we actually use.</summary>

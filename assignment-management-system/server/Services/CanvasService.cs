@@ -5,6 +5,13 @@ using AMS.Api.Middleware;
 using AMS.Api.Models;
 using Microsoft.Extensions.Options;
 
+using System.Globalization;
+using System.Net.Http.Headers;
+using System.Reflection.Metadata;
+using System.Text.Json;
+using System.Threading.Tasks;
+
+
 namespace AMS.Api.Services;
 
 /// <summary>
@@ -322,4 +329,43 @@ public class CanvasService : ICanvasService
             return [];
         }
     }
+
+    public async Task<IReadOnlyList<CourseWithAssignments>> SearchAssignmentsByCourseCodeAsync(string courseCode)
+    {
+        if (string.IsNullOrWhiteSpace(courseCode))
+        {
+            throw new ApiException(400, "Course code is required.");
+        }
+
+        EnsureConfigured();
+
+        var courses = await GetCoursesAsync();
+
+        var matches =
+            courses.Where(c => c.CourseCode != null && c.CourseCode.Contains(courseCode, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        var assignmentTasks = matches.Select(async course =>
+        {
+            try
+            {
+                return await GetAssignmentsForCourseAsync(course.Id);
+            }
+            catch
+            {
+                return (IReadOnlyList<CanvasAssignment>)[];
+            }
+        });
+
+        var assignmentLists = await Task.WhenAll(assignmentTasks);
+
+        return matches.Select((course,i) => CourseWithAssignments
+        {
+            CourseId = course.Id;
+            CourseName = course.Name;
+            Assignments = assignmentLists[i];
+        }).ToList();
+
+    }
+    
 }

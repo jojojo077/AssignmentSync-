@@ -3,6 +3,7 @@ import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Calendar from './pages/Calendar';
 import Assignments from './pages/Assignments';
+import SearchAssignments from '.pages/SearchAssignments';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 
@@ -12,7 +13,9 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Dashboard /> },
-      { path: 'calendar', element: <Calendar /> },
+        { path: 'calendar', element: <Calendar /> },
+        { path: 'search', element: <SearchAssignments /> },
+
       { path: 'assignments', element: <Assignments /> },
       { path: 'login', element: <Login /> },
       { path: '*', element: <NotFound /> },

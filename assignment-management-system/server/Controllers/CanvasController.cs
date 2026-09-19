@@ -25,6 +25,18 @@ public class CanvasController(ICanvasService canvasService) : ControllerBase
         return Ok(data);
     }
 
+    [HttpGet("assignments/search")]
+    public async Task<IActionResult> SearchAssignmentsByCourseCode([FromQuery] string courseCode)
+    {
+        if (string.IsNullOrWhiteSpace(courseCode))
+        {
+            return BadRequest(new { message = "courseCode query parameter is required." });
+        }
+
+        var data = await canvasService.SearchAssignmentsByCourseCode(courseCode);
+        return Ok(data);
+    }
+
     [HttpGet("announcements")]
     public async Task<IActionResult> GetRecentAnnouncements()
     {
