@@ -6,7 +6,6 @@ using AMS.Api.Models;
 using Microsoft.Extensions.Options;
 
 using System.Globalization;
-using System.Net.Http.Headers;
 using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -359,11 +358,11 @@ public class CanvasService : ICanvasService
 
         var assignmentLists = await Task.WhenAll(assignmentTasks);
 
-        return matches.Select((course,i) => CourseWithAssignments
+        return matches.Select((course,i) => new CourseWithAssignments
         {
-            CourseId = course.Id;
-            CourseName = course.Name;
-            Assignments = assignmentLists[i];
+            CourseId = course.Id,
+            CourseName = course.Name,
+            Assignments = assignmentLists[i],
         }).ToList();
 
     }

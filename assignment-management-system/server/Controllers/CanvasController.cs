@@ -33,7 +33,7 @@ public class CanvasController(ICanvasService canvasService) : ControllerBase
             return BadRequest(new { message = "courseCode query parameter is required." });
         }
 
-        var data = await canvasService.SearchAssignmentsByCourseCode(courseCode);
+        var data = await canvasService.SearchAssignmentsByCourseCodeAsync(courseCode);
         return Ok(data);
     }
 

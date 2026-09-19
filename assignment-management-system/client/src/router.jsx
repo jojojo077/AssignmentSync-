@@ -3,7 +3,7 @@ import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import Calendar from './pages/Calendar';
 import Assignments from './pages/Assignments';
-import SearchAssignments from '.pages/SearchAssignments';
+import SearchAssignments from './pages/SearchAssignments';
 import Login from './pages/Login';
 import NotFound from './pages/NotFound';
 
