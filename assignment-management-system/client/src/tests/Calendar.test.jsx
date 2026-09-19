@@ -26,7 +26,9 @@ const mockCoursesData = [
 vi.mock('../services/api', () => ({
   canvas: {
     getUpcomingAssignments: vi.fn(),
+    getCalendarEvents: vi.fn(),
     getCustomEvents: vi.fn(() => []),
+    pruneStaleCanvasEvents: vi.fn((events) => events),
     addEvent: vi.fn((eventData) =>
       Promise.resolve({
         data: {
@@ -46,6 +48,8 @@ describe('Calendar Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     canvas.getCustomEvents.mockReturnValue([]);
+    canvas.getCalendarEvents.mockResolvedValue({ data: [] });
+    canvas.pruneStaleCanvasEvents.mockImplementation((events) => events);
   });
 
   //UT1: Load calendar and input contents
@@ -91,6 +95,11 @@ describe('Calendar Component', () => {
     render(<Calendar />);
 
     await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Agenda$/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Agenda$/i }));
+
+    await waitFor(() => {
       expect(screen.getByText(/Mid-Project Report/i)).toBeInTheDocument();
     });
 
@@ -113,6 +122,8 @@ describe('Calendar Component', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /\+ Add Event/i })).toBeInTheDocument();
     });
+
+    fireEvent.click(screen.getByRole('button', { name: /^Agenda$/i }));
 
     // Open add event modal
     fireEvent.click(screen.getByRole('button', { name: /\+ Add Event/i }));
@@ -164,6 +175,74 @@ describe('Calendar Component', () => {
         })
       );
     });
+  });
+
+  //UT6: Acceptance Criteria - Calendar sync merges live Canvas events
+  it('synchronizes live Canvas events and prunes stale cached events', async () => {
+    canvas.getCalendarEvents.mockResolvedValue({
+      data: [
+        {
+          id: 7001,
+          title: 'Canvas Lecture',
+          start_at: '2026-08-26T09:00:00Z',
+          courseId: 23616,
+          courseName: 'Software Quality Assurance 2026 S2',
+        },
+      ],
+    });
+    canvas.pruneStaleCanvasEvents.mockImplementation((events) => events);
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: mockCoursesData });
+
+    render(<Calendar />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /^Agenda$/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Agenda$/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('Canvas Lecture')).toBeInTheDocument();
+    });
+    expect(canvas.getCalendarEvents).toHaveBeenCalledTimes(1);
+    expect(canvas.pruneStaleCanvasEvents).toHaveBeenCalledWith([
+      expect.objectContaining({
+        id: 7001,
+        name: 'Canvas Lecture',
+        due_at: '2026-08-26T09:00:00Z',
+      }),
+    ]);
+  });
+
+  //UT7: Acceptance Criteria - User can manually resynchronize calendar data
+  it('refreshes Canvas calendar events when Sync is clicked', async () => {
+    canvas.getCalendarEvents
+      .mockResolvedValueOnce({ data: [] })
+      .mockResolvedValueOnce({
+        data: [
+          {
+            id: 7002,
+            title: 'New Canvas Deadline',
+            start_at: '2026-08-27T23:59:00Z',
+            courseId: 23616,
+            courseName: 'Software Quality Assurance 2026 S2',
+          },
+        ],
+      });
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: mockCoursesData });
+
+    render(<Calendar />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /sync/i })).toBeInTheDocument();
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Agenda$/i }));
+    fireEvent.click(screen.getByRole('button', { name: /sync/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText('New Canvas Deadline')).toBeInTheDocument();
+    });
+    expect(canvas.getCalendarEvents).toHaveBeenCalledTimes(2);
+    expect(canvas.getUpcomingAssignments).toHaveBeenCalledTimes(2);
   });
 });
 

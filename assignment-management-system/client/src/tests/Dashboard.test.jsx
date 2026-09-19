@@ -267,4 +267,52 @@ describe('Dashboard Component', () => {
       expect(screen.getByText(/no assignments to track/i)).toBeInTheDocument();
     });
   });
+  
+  //UT11: Announcement previews strip HTML while retaining readable content
+  it('renders a clean recent announcement preview from HTML content', async () => {
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: [] });
+    canvas.getAnnouncements.mockResolvedValue({
+      data: [
+        {
+          id: 502,
+          title: 'Library Hours Update',
+          message: '<p>Library closes at 8pm&nbsp;&amp;&nbsp;reopens at 9am.</p>',
+          courseName: 'Software Quality Assurance',
+        },
+      ],
+    });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Library closes at 8pm & reopens at 9am.')).toBeInTheDocument();
+    });
+    expect(screen.queryByText(/<p>|&nbsp;|&amp;/)).not.toBeInTheDocument();
+  });
+
+  //UT12: Canvas submission flags seed semester progress
+  it('seeds semester progress from completed assignments returned by Canvas', async () => {
+    const mockData = [
+      {
+        courseId: 101,
+        courseName: 'Software Quality Assurance',
+        assignments: [
+          { id: 1, name: 'Assignment 1', has_submitted_submissions: true },
+          { id: 2, name: 'Assignment 2' },
+        ],
+      },
+    ];
+    canvas.getCompletedAssignments.mockReturnValue([]);
+    canvas.getUpcomingAssignments.mockResolvedValue({ data: mockData });
+    canvas.getAnnouncements.mockResolvedValue({ data: [] });
+
+    render(<Dashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
+      expect(screen.getByText('1 of 2 assignments completed this semester')).toBeInTheDocument();
+    });
+    expect(screen.getByRole('checkbox', { name: /mark assignment 1 as incomplete/i })).toBeChecked();
+    expect(canvas.setCompletedAssignments).toHaveBeenCalledWith(['1']);
+  });
 });
