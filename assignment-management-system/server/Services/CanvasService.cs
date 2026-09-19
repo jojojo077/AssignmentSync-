@@ -77,7 +77,7 @@ public class CanvasService : ICanvasService
     /// GetFromJsonAsync's built-in error handling throws away the response
     /// body on a non-success status, so all you ever see is "403 Forbidden"
     /// with no explanation. Canvas usually puts a specific reason in the
-    /// body (e.g. "Invalid access token", "insufficient scope") — this reads
+    /// body (e.g. "Invalid access token", "insufficient scope") - this reads
     /// it and puts it in the exception message instead of discarding it.
     /// </summary>
     private async Task<T?> GetJsonOrThrowAsync<T>(string requestUri)

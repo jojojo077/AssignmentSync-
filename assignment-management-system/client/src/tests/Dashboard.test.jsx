@@ -34,7 +34,7 @@ describe('Dashboard Component', () => {
 
     render(<Dashboard />);
 
-    expect(screen.getByText(/loading assignments…/i)).toBeInTheDocument();
+    expect(screen.getByText(/loading assignments.../i)).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByText(/Software Quality Assurance/i)).toBeInTheDocument();

@@ -36,9 +36,10 @@ export default function SearchAssignments() {
                     onChange={(e) => setCourseCode(e.target.value)}
                     placeholder="Course code (e.g. ENSE707)"
                     aria-label="Course code"
+                    style={{ width: '28ch', padding: '0.5rem', boxSizing: 'border-box' }}
                 />
                 <button type="submit" disabled={status === 'loading' || !courseCode.trim()}>
-                    {status === 'loading' ? 'Searching…' : 'Search'}
+                    {status === 'loading' ? 'Searching...' : 'Search'}
                 </button>
             </form>
 
@@ -52,7 +53,7 @@ export default function SearchAssignments() {
 
                     {status === 'loading' && (
                         <div className="dashboard-status-state">
-                            <p>Searching…</p>
+                            <p>Searching...</p>
                         </div>
                     )}
 
@@ -74,7 +75,7 @@ export default function SearchAssignments() {
                                 <li key={course.courseId} className="dashboard-course-item">
                                     <div className="dashboard-course-item__main">
                                         <span className="dashboard-course-item__title">
-                                            <strong>{course.courseName}</strong> — {course.assignments.length} assignment(s)
+                                            <strong>{course.courseName}</strong> - {course.assignments.length} assignment(s)
                                         </span>
                                     </div>
 

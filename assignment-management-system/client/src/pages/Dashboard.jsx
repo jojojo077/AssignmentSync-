@@ -147,7 +147,7 @@ export default function Dashboard() {
             <div className="dashboard-card__content">
               {status === 'loading' && (
                 <div className="dashboard-status-state">
-                  <p>Loading assignments…</p>
+                    <p>Loading assignments...</p>
                 </div>
               )}
 
@@ -173,7 +173,7 @@ export default function Dashboard() {
                     <li key={course.courseId} className="dashboard-course-item">
                       <div className="dashboard-course-item__main">
                         <span className="dashboard-course-item__title">
-                          <strong>{course.courseName}</strong> — {course.assignments.length} assignment(s)
+                          <strong>{course.courseName}</strong> - {course.assignments.length} assignment(s)
                         </span>
                       </div>
 
@@ -221,7 +221,7 @@ export default function Dashboard() {
             <div className="dashboard-card__content">
               {announcementsStatus === 'loading' && (
                 <div className="dashboard-status-state">
-                  <p>Loading announcements…</p>
+                  <p>Loading announcements...</p>
                 </div>
               )}
 
@@ -278,7 +278,7 @@ export default function Dashboard() {
 
                         {cleanSnippet && (
                           <p className="announcement-item__snippet">
-                            {cleanSnippet.length > 140 ? `${cleanSnippet.substring(0, 140)}…` : cleanSnippet}
+                            {cleanSnippet.length > 140 ? `${cleanSnippet.substring(0, 140)}...` : cleanSnippet}
                           </p>
                         )}
 
