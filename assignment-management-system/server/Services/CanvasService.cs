@@ -65,6 +65,13 @@ public class CanvasService : ICanvasService
             "courses?enrollment_state=active&per_page=100") ?? [];
     }
 
+    public async Task<IReadOnlyList<CanvasCourse>> GetAllCoursesAsync()
+    {
+        EnsureConfigured();
+        return await GetJsonOrThrowAsync<List<CanvasCourse>>(
+            "courses?&per_page=100") ?? [];
+    }
+
     public async Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId)
     {
         EnsureConfigured();
@@ -338,7 +345,7 @@ public class CanvasService : ICanvasService
 
         EnsureConfigured();
 
-        var courses = await GetCoursesAsync();
+        var courses = await GetAllCoursesAsync();
 
         var matches =
             courses.Where(c => c.CourseCode != null && c.CourseCode.Contains(courseCode, StringComparison.OrdinalIgnoreCase))

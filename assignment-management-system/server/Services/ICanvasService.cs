@@ -5,6 +5,7 @@ namespace AMS.Api.Services;
 public interface ICanvasService
 {
     Task<IReadOnlyList<CanvasCourse>> GetCoursesAsync();
+    Task<IReadOnlyList<CanvasCourse>> GetAllCoursesAsync();
 
     Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId);
 

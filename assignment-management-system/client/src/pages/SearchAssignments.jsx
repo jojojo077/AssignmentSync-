@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { canvas } from '../services/api';
 
 export default function SearchAssignments() {
@@ -6,6 +6,30 @@ export default function SearchAssignments() {
     const [results, setResults] = useState([]);
     const [status, setStatus] = useState('idle');
     const [errorMessage, setErrorMessage] = useState('');
+
+    const [activeCourses, setActiveCourses] = useState([]);
+    const [activeCoursesStatus, setActiveCoursesStatus] = useState('idle');
+
+    useEffect(() => {
+        let cancelled = false;
+        setActiveCoursesStatus('loading');
+
+        canvas
+            .getCourses()
+            .then((res) => {
+                if (!cancelled) {
+                    setActiveCourses(res.data || []);
+                    setActiveCoursesStatus('ready');
+                }
+            })
+            .catch(() => {
+                if (!cancelled) setActiveCoursesStatus('error');
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -34,7 +58,7 @@ export default function SearchAssignments() {
                     type="text"
                     value={courseCode}
                     onChange={(e) => setCourseCode(e.target.value)}
-                    placeholder="Course code (e.g. ENSE707)"
+                    placeholder="Course code"
                     aria-label="Course code"
                     style={{ width: '28ch', padding: '0.5rem', boxSizing: 'border-box' }}
                 />
@@ -42,6 +66,16 @@ export default function SearchAssignments() {
                     {status === 'loading' ? 'Searching...' : 'Search'}
                 </button>
             </form>
+
+            {activeCoursesStatus === 'ready' && activeCourses.length > 0 && (
+                <p style={{ fontSize: '0.85rem', opacity: 0.85, marginTop: '-0.5rem', marginBottom: '1rem' }}>
+                    Active Courses: {' '}
+                    {activeCourses
+                        .map((c) => c.courseCode)
+                        .filter(Boolean)
+                        .join(', ')}
+                </p>
+            )}
 
             <div className="dashboard-card">
                 <div className="dashboard-card__content">
