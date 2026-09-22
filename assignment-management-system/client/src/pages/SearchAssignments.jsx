@@ -69,12 +69,12 @@ export default function SearchAssignments() {
 
             {activeCoursesStatus === 'ready' && activeCourses.length > 0 && (
                 <p style={{ fontSize: '0.85rem', opacity: 0.85, marginTop: '-0.5rem', marginBottom: '1rem' }}>
-                    Active Courses: {' '}
+                    Active Courses: {' '}<b>
                     {activeCourses
-                        .map((c) => c.courseCode)
+                        .map((c) => c.course_code)
                         .filter(Boolean)
                         .join(', ')}
-                </p>
+                    </b></p>
             )}
 
             <div className="dashboard-card">
