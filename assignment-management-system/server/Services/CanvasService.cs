@@ -385,4 +385,31 @@ public class CanvasService : ICanvasService
 
     }
     
+
+    public async Task<IReadOnlyList<CourseProgressSummary>> GetAssignmentProgressAsync()
+    {
+        var courses = await GetCoursesAsync();
+        var now = DateTimeOffset.Now;
+
+        var summaries = new List<CourseProgressSummary>();
+        foreach (var course in courses)
+        {
+            var assignments = await GetAssignmentsForCourseAsync(course.Id);
+            var statuses = assignments.Select(a => Categorize(a, now)).ToList();
+
+            summaries.Add(new CourseProgressSummary
+            {
+                CourseId = course.Id,
+                CourseName = course.Name,
+                CompletedCount = statuses.Count(s =>s == AssignmentStatus.Completed),
+                OverdueCount = statuses.Count(s => s == AssignmentStatus.Overdue),
+                UncompletedCount = statuses.Count(s => s == AssignmentStatus.Uncompleted),
+                TotalCount = assignments.Count,
+                Assignments = assignments.ToList(),
+            });
+
+            return summaries;
+        }
+    }
+    
 }

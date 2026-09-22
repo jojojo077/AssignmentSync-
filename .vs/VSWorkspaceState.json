@@ -4,9 +4,9 @@
     "\\assignment-management-system",
     "\\assignment-management-system\\client",
     "\\assignment-management-system\\client\\src",
-    "\\assignment-management-system\\client\\src\\pages",
+    "\\assignment-management-system\\client\\src\\components",
+    "\\assignment-management-system\\client\\src\\services",
     "\\assignment-management-system\\server",
-    "\\assignment-management-system\\server\\Models",
     "\\assignment-management-system\\server\\Services",
     "\\assignmentsync-test",
     "\\assignmentsync-test\\assignmentsync-test-C#"

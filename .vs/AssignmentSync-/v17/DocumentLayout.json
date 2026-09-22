@@ -7,8 +7,16 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assignment-management-system\\server\\Services\\CanvasService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\server\\Services\\ICanvasService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assignment-management-system\\server\\Services\\ICanvasService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\server\\Models\\CanvasModels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assignment-management-system\\server\\Models\\CanvasModels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\src\\services\\api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assignment-management-system\\client\\src\\services\\api.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,11 +26,37 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "api.js",
+              "DocumentMoniker": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\src\\services\\api.js",
+              "RelativeDocumentMoniker": "assignment-management-system\\client\\src\\services\\api.js",
+              "ToolTip": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\src\\services\\api.js",
+              "RelativeToolTip": "assignment-management-system\\client\\src\\services\\api.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-09-22T16:56:19.764Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ICanvasService.cs",
+              "DocumentMoniker": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\server\\Services\\ICanvasService.cs",
+              "RelativeDocumentMoniker": "assignment-management-system\\server\\Services\\ICanvasService.cs",
+              "ToolTip": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\server\\Services\\ICanvasService.cs",
+              "RelativeToolTip": "assignment-management-system\\server\\Services\\ICanvasService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-22T16:55:34.993Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -32,20 +66,20 @@
               "RelativeDocumentMoniker": "assignment-management-system\\server\\Services\\CanvasService.cs",
               "ToolTip": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\server\\Services\\CanvasService.cs",
               "RelativeToolTip": "assignment-management-system\\server\\Services\\CanvasService.cs",
-              "ViewState": "AgIAAMQAAAAAAAAAAAAnwFoAAABGAAAAAAAAAA==",
+              "ViewState": "AgIAAIIBAAAAAAAAAAAYwJEBAAAlAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-22T14:14:42.146Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "CanvasModels.cs",
               "DocumentMoniker": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\server\\Models\\CanvasModels.cs",
               "RelativeDocumentMoniker": "assignment-management-system\\server\\Models\\CanvasModels.cs",
               "ToolTip": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\server\\Models\\CanvasModels.cs",
               "RelativeToolTip": "assignment-management-system\\server\\Models\\CanvasModels.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAAA0AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-09-22T14:14:36.229Z",
               "EditorCaption": ""
