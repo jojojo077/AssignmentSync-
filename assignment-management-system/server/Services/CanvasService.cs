@@ -76,9 +76,6 @@ public class CanvasService : ICanvasService
     {
         EnsureConfigured();
 
-<<<<<<< Updated upstream
-=======
-<<<<<<< HEAD
         return await GetJsonOrThrowAsync<List<CanvasAssignment>>(
             $"courses/{courseId}/assignments?per_page=100&order_by=due_at&include[]=submission") ?? [];
     }
@@ -92,18 +89,13 @@ public class CanvasService : ICanvasService
 
         return assignment.DueAt is not null && assignment.DueAt < now
             ? AssignmentStatus.Overdue : AssignmentStatus.Uncompleted;
-=======
->>>>>>> Stashed changes
+
         var assignments = await GetJsonOrThrowAsync<List<CanvasAssignment>>(
             $"courses/{courseId}/assignments?per_page=100&order_by=due_at") ?? [];
 
         return assignments
             .Where(assignment => !assignment.DueAt.HasValue || assignment.DueAt.Value > DateTimeOffset.UtcNow)
             .ToList();
-<<<<<<< Updated upstream
-=======
->>>>>>> cde68a4209b8e4431d37b837adf38a492ea423c7
->>>>>>> Stashed changes
     }
 
     /// <summary>
