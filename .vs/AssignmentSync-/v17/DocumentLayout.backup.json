@@ -22,8 +22,12 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -32,7 +36,7 @@
               "RelativeDocumentMoniker": "assignment-management-system\\client\\src\\pages\\SearchAssignments.jsx",
               "ToolTip": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\src\\pages\\SearchAssignments.jsx",
               "RelativeToolTip": "assignment-management-system\\client\\src\\pages\\SearchAssignments.jsx",
-              "ViewState": "AgIAACwAAAAAAAAAAAAQwDAAAAAFAAAAAAAAAA==",
+              "ViewState": "AgIAADgAAAAAAAAAAAAQwEwAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2026-09-21T11:08:45.357Z",
               "EditorCaption": ""
@@ -47,12 +51,7 @@
               "RelativeToolTip": "assignment-management-system\\server\\Services\\ICanvasService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA7AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-21T10:56:02.799Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+              "WhenOpened": "2026-09-21T10:56:02.799Z"
             },
             {
               "$type": "Document",
@@ -64,8 +63,7 @@
               "RelativeToolTip": "assignment-management-system\\server\\Services\\CanvasService.cs",
               "ViewState": "AgIAAEgBAAAAAAAAAAAAAF4BAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-21T10:37:23.116Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-21T10:37:23.116Z"
             }
           ]
         },

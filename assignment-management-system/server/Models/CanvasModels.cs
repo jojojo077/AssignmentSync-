@@ -13,6 +13,15 @@ public class CanvasCourse
     public string? CourseCode { get; set; }
 }
 
+public class CanvasSubmission
+{
+    [JsonPropertyName("workflow_state")]
+    public string? WorkflowState { get; set; }
+
+    [JsonPropertyName("submitted_at")]
+    public DateTimeOffset? SubmittedAt { get; set; }
+}
+
 /// <summary>Subset of Canvas's assignment object we actually use.</summary>
 public class CanvasAssignment
 {
@@ -28,6 +37,8 @@ public class CanvasAssignment
 
     [JsonPropertyName("html_url")]
     public string? HtmlUrl { get; set; }
+
+    public CanvasSubmission? Submission { get; set; }
 }
 
 /// <summary>
@@ -43,6 +54,18 @@ public class CourseWithAssignments
 
     public IReadOnlyList<CanvasAssignment> Assignments { get; set; } = [];
 }
+
+public class CourseProgressSummary
+{
+    public long CourseId { get; set; }
+    public string CourseName { get; set; }
+    public int CompletedCount { get; set; }
+    public int OverdueCount { get; set; }
+    public int UncompletedCount { get; set; }
+    public int TotalCount { get; set; }
+    public List<CanvasAssignment> Assignments { get; set; } = [];
+}
+
 
 /// <summary>Author metadata on Canvas announcements.</summary>
 public class CanvasAuthor

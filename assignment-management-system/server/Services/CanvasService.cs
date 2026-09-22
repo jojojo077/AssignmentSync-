@@ -77,7 +77,25 @@ public class CanvasService : ICanvasService
         EnsureConfigured();
 
         return await GetJsonOrThrowAsync<List<CanvasAssignment>>(
+            $"courses/{courseId}/assignments?per_page=100&order_by=due_at&include[]=submission") ?? [];
+    }
+
+    public enum AssignmentStatus { Completed, Overdue, Uncompleted }
+
+    private static AssignmentStatus Categorize(CanvasAssignment assignment, DateTimeOffset now)
+    {
+        bool isCompleted = assignment.Submission?.WorkflowState is "submitted" or "graded" or "pending_review";
+        if (isCompleted) return AssignmentStatus.Completed;
+
+        return assignment.DueAt is not null && assignment.DueAt < now
+            ? AssignmentStatus.Overdue : AssignmentStatus.Uncompleted;
+
+        var assignments = await GetJsonOrThrowAsync<List<CanvasAssignment>>(
             $"courses/{courseId}/assignments?per_page=100&order_by=due_at") ?? [];
+
+        return assignments
+            .Where(assignment => !assignment.DueAt.HasValue || assignment.DueAt.Value > DateTimeOffset.UtcNow)
+            .ToList();
     }
 
     /// <summary>
