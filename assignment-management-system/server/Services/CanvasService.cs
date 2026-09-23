@@ -80,7 +80,6 @@ public class CanvasService : ICanvasService
             $"courses/{courseId}/assignments?per_page=100&order_by=due_at&include[]=submission") ?? [];
     }
 
-    public enum AssignmentStatus { Completed, Overdue, Uncompleted }
 
     public static AssignmentStatus Categorize(CanvasAssignment assignment, DateTimeOffset now)
     {
@@ -395,17 +394,17 @@ public class CanvasService : ICanvasService
         foreach (var course in courses)
         {
             var assignments = await GetAssignmentsForCourseAsync(course.Id);
-            var statuses = assignments.Select(a => Categorize(a, now)).ToList();
+            var statuses = assignments.Select(a => new AssignmentWithStatus { Assignment = a, Status = Categorize(a, now)}).ToList();
 
             summaries.Add(new CourseProgressSummary
             {
                 CourseId = course.Id,
                 CourseName = course.Name,
-                CompletedCount = statuses.Count(s =>s == AssignmentStatus.Completed),
-                OverdueCount = statuses.Count(s => s == AssignmentStatus.Overdue),
-                UncompletedCount = statuses.Count(s => s == AssignmentStatus.Uncompleted),
+                CompletedCount = statuses.Count(s => s.Status == AssignmentStatus.Completed),
+                OverdueCount = statuses.Count(s => s.Status == AssignmentStatus.Overdue),
+                UncompletedCount = statuses.Count(s => s.Status == AssignmentStatus.Uncompleted),
                 TotalCount = assignments.Count,
-                Assignments = assignments.ToList(),
+                Assignments = statuses,
             });
 
             

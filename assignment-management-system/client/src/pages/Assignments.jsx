@@ -14,8 +14,29 @@ function ProgressBar({ completed, overdue, uncompleted, total })
     );
 }
 
+function groupByStatus(assignments) {
+    return {
+        completed: assignments.filter((a) => a.status === 'Completed'),
+        overdue: assignments.filter((a) => a.status === 'Overdue'),
+        uncompleted: assignments.filter((a) => a.status === 'Uncompleted'),
+    }
+}
+
+function AssignmentGroup({ title, colorClass, items }) {
+    if (items.length === 0) return null;
+    return (
+        <div className="assignment-group">
+            <h4 className={colorClass}>{title} ({items.length})</h4>
+            <ul className="dashboard-assignment-sublist">
+                {items.map(({ assignment }) => (
+                    <li key={assignment.id} > {assignment.name} </li>))}
+            </ul>
+        </div>
+    );
+}
 function CourseSection({ course })
 {
+    const { completed, overdue, uncompleted } = groupByStatus(course.assignments);
     const pctComplete = course.totalCount === 0 ? 0 : Math.round((course.completedCount / course.totalCount) * 100);
 
     return (
@@ -23,7 +44,6 @@ function CourseSection({ course })
             <summary style={{ cursor: 'pointer', padding: '0.75rem 1rem' }}>
                 <strong> {course.courseName}</strong> - {pctComplete}% complete
             </summary>
-
             <div style={{ padding: '0 1rem 1rem' }}>
                 <ProgressBar
                     completed={course.completedCount}
@@ -31,13 +51,12 @@ function CourseSection({ course })
                     uncompleted={course.uncompletedCount}
                     total={course.totalCount}
                 />
-
-                <ul className="dashboard-assignment-sublist" style={{ marginTop: '0.75rem' }}>
-                    {course.assignments.map((a) => (
-                        <li key={a.id}>{a.name}</li>
-                    ))}
-                </ul>
+                <AssignmentGroup title="Overdue" colorClass="text-red" items={overdue} />
+                <AssignmentGroup title="Uncompleted" colorClass="text-gray" items={uncompleted} />
+                <AssignmentGroup title="Completed" colorClass="text-green" items={completed} />
+                
             </div>
+            
         </details>
     );
 }

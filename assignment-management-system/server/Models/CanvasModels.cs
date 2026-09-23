@@ -63,9 +63,16 @@ public class CourseProgressSummary
     public int OverdueCount { get; set; }
     public int UncompletedCount { get; set; }
     public int TotalCount { get; set; }
-    public List<CanvasAssignment> Assignments { get; set; } = [];
+    public List<AssignmentWithStatus> Assignments { get; set; } = [];
 }
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum AssignmentStatus { Completed, Overdue, Uncompleted }
 
+public class AssignmentWithStatus
+{
+    public CanvasAssignment Assignment { get; set; } = null!;
+    public AssignmentStatus Status { get; set; }
+}
 
 /// <summary>Author metadata on Canvas announcements.</summary>
 public class CanvasAuthor

@@ -7,10 +7,11 @@
     "\\assignment-management-system\\client\\src\\pages",
     "\\assignment-management-system\\server",
     "\\assignment-management-system\\server\\Controllers",
+    "\\assignment-management-system\\server\\Models",
     "\\assignment-management-system\\server\\Services",
     "\\assignmentsync-test",
     "\\assignmentsync-test\\assignmentsync-test-C#"
   ],
-  "SelectedNode": "\\assignment-management-system\\client\\src\\index.css",
+  "SelectedNode": "\\assignment-management-system\\client",
   "PreviewInSolutionExplorer": false
 }
