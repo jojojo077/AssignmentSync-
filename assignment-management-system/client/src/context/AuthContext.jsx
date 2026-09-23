@@ -3,17 +3,28 @@ import { createContext, useContext, useState, useCallback } from 'react';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState(() => localStorage.getItem('ams_token'));
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('ams_user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const login = useCallback((nextToken, nextUser) => {
     localStorage.setItem('ams_token', nextToken);
+    if (nextUser) {
+      localStorage.setItem('ams_user', JSON.stringify(nextUser));
+    }
     setToken(nextToken);
-    setUser(nextUser);
+    setUser(nextUser || null);
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem('ams_token');
+    localStorage.removeItem('ams_user');
     setToken(null);
     setUser(null);
   }, []);

@@ -15,9 +15,7 @@ public class RequireAuthAttribute : ActionFilterAttribute
 {
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        var header = context.HttpContext.Request.Headers.Authorization.ToString();
-
-        if (string.IsNullOrEmpty(header) || !header.StartsWith("Bearer "))
+        if (context.HttpContext.Items["AuthenticatedEmail"] is not string)
         {
             context.Result = new UnauthorizedObjectResult(new
             {
@@ -25,6 +23,5 @@ public class RequireAuthAttribute : ActionFilterAttribute
             });
         }
 
-        // TODO: verify JWT, attach decoded user to HttpContext.Items or a claims principal
     }
 }

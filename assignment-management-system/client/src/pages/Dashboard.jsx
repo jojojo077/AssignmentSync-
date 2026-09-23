@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { canvas } from '../services/api';
+import { canvas, progress } from '../services/api';
 
 /**
  * Strips HTML tags and unescapes common entities for a clean text preview.
@@ -67,10 +67,7 @@ export default function Dashboard() {
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
   // Completion state — initialised from localStorage, seeded from Canvas submission flags
-  const [completedIds, setCompletedIds] = useState(() => {
-    const stored = canvas.getCompletedAssignments ? canvas.getCompletedAssignments() : [];
-    return new Set(stored.map(String));
-  });
+  const [completedIds, setCompletedIds] = useState(new Set());
 
   // Checklist filter: 'all' | 'pending' | 'completed'
   const [checklistFilter, setChecklistFilter] = useState('all');
@@ -78,6 +75,16 @@ export default function Dashboard() {
   useEffect(() => {
     let cancelled = false;
     setStatus('loading');
+
+    // Load the checklist from the authenticated user's file before rendering progress.
+    progress
+      .getChecklist()
+      .then((res) => {
+        if (!cancelled) setCompletedIds(new Set((res.data || []).map(String)));
+      })
+      .catch(() => {
+        if (!cancelled) setCompletedIds(new Set());
+      });
 
     canvas
       .getUpcomingAssignments()
@@ -97,10 +104,8 @@ export default function Dashboard() {
                 }
               });
             });
-            // Persist any newly seeded ids
-            if (canvas.setCompletedAssignments) {
-              canvas.setCompletedAssignments([...next]);
-            }
+            // Persist Canvas submission seeds in the authenticated user's checklist.
+            progress.setChecklist([...next]).catch(() => {});
             return next;
           });
         }
@@ -132,7 +137,7 @@ export default function Dashboard() {
     };
   }, []);
 
-  // Toggle an assignment's completed state and persist to localStorage
+  // Toggle an assignment's completed state and persist it for the current user.
   const handleToggleCompleted = (assignmentId) => {
     const idStr = String(assignmentId);
     setCompletedIds((prev) => {
@@ -142,9 +147,7 @@ export default function Dashboard() {
       } else {
         next.add(idStr);
       }
-      if (canvas.setCompletedAssignments) {
-        canvas.setCompletedAssignments([...next]);
-      }
+      progress.setChecklist([...next]).catch(() => {});
       return next;
     });
   };

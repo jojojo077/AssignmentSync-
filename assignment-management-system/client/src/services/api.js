@@ -3,7 +3,8 @@ import axios from 'axios';
 // Single axios instance for the whole app. Base URL comes from Vite env
 // (see .env.example) so it's easy to point at a deployed API later.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5003/api',
+
 });
 
 // Attach the auth token (once login is implemented) to every request.
@@ -130,6 +131,15 @@ export const canvas = {
 };
 
 export const auth = {
-  login: (email, password) => api.post('/auth/login', { email, password }),
-  register: (email, password, name) => api.post('/auth/register', { email, password, name }),
+  login: (email, password, canvasAccessToken) =>
+    api.post('/auth/login', { email, password, canvasAccessToken }),
+  register: (email, password, name, canvasAccessToken) =>
+    api.post('/auth/register', { email, password, name, canvasAccessToken }),
+  setCanvasToken: (accessToken) => api.put('/auth/canvas-token', { accessToken }),
+};
+
+// Semester progress is stored by the API so checklist state follows the logged-in user.
+export const progress = {
+  getChecklist: () => api.get('/progress/checklist'),
+  setChecklist: (assignmentIds) => api.put('/progress/checklist', { assignmentIds }),
 };

@@ -11,18 +11,16 @@ public class CanvasControllerTests(WebApplicationFactory<Program> factory) : ICl
     private readonly HttpClient _client = factory.CreateClient();
 
     [Fact]
-    public async Task GetCourses_WithoutAuthHeader_StillReachesController()
+    public async Task GetCourses_WithoutAuthHeader_ReturnsUnauthorized()
     {
-        // The [RequireAuth] guard was removed for now (see CanvasController) since
-        // there's no login flow yet to issue a token. This should reach the
-        // controller and fail on missing Canvas config, not on missing auth.
+        // Test Case: Canvas data is never available without a valid user token.
         var response = await _client.GetAsync("/api/canvas/courses");
 
-        Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task GetCourses_WithNoCanvasConfig_Returns500WithMessage()
+    public async Task GetCourses_WithNoCanvasConfigAndNoAuth_ReturnsUnauthorized()
     {
         using var clientWithoutConfig = factory.WithWebHostBuilder(builder =>
         {
@@ -38,38 +36,31 @@ public class CanvasControllerTests(WebApplicationFactory<Program> factory) : ICl
 
         var response = await clientWithoutConfig.GetAsync("/api/canvas/courses");
 
-        // When Canvas:BaseUrl/AccessToken is empty,
-        // CanvasService.EnsureConfigured() should reject the call cleanly
-        // rather than throwing a raw HttpRequestException.
-        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-
-        var body = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Canvas API is not configured", body);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task GetAnnouncements_WithoutAuthHeader_StillReachesController()
+    public async Task GetAnnouncements_WithoutAuthHeader_ReturnsUnauthorized()
     {
         var response = await _client.GetAsync("/api/canvas/announcements");
 
-        Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task GetEvents_WithoutAuthHeader_StillReachesController()
+    public async Task GetEvents_WithoutAuthHeader_ReturnsUnauthorized()
     {
         var response = await _client.GetAsync("/api/canvas/events");
 
-        Assert.NotEqual(HttpStatusCode.Unauthorized, response.StatusCode);
-        Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
     [Fact]
-    public async Task CreateEvent_WithMissingName_ReturnsBadRequest()
+    public async Task CreateEvent_WithoutAuthHeader_ReturnsUnauthorized()
     {
+        // Test Case: Authentication is checked before Canvas mutation validation.
         var response = await _client.PostAsJsonAsync("/api/canvas/events", new { name = "" });
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 }
