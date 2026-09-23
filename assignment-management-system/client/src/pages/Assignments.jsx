@@ -79,9 +79,15 @@ export default function Assignments() {
         return () => { cancelled = true; };
     }, []);
 
-    if (status === 'loading') return <p>Loading...</p>;
-    if (status === 'error') return <p role="alert">Couldn't load assignment progress.</p>;
 
-    return courses.map((c) => <CourseSection key={c.courseId} course={c} />);
+    return (
+        <section>
+            <h1>Workload Summary</h1>
+            <p>Expand a course to see a breakdown of completed and uncompleted assignments.</p>
 
+            {status === 'loading' && <p>Loading...</p>}
+            {status === 'error' && <p role="alert">Couldn't load assignment progress.</p>}
+            {status === 'ready' && courses.map((c) => <CourseSection key={c.courseId} course={c} />)}
+        </section>
+    );
 }
