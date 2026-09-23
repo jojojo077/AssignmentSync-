@@ -30,49 +30,25 @@ namespace AMS.Api.Services;
 public class CanvasService : ICanvasService
 {
     private readonly HttpClient _http;
-    private bool _configured;
-    private readonly UserFileStore? _userStore;
-    private readonly IHttpContextAccessor? _httpContextAccessor;
-    private readonly string _baseUrl;
+    private readonly bool _configured;
 
-    public CanvasService(
-        HttpClient http,
-        IOptions<CanvasOptions> options,
-        UserFileStore? userStore = null,
-        IHttpContextAccessor? httpContextAccessor = null)
+    public CanvasService(HttpClient http, IOptions<CanvasOptions> options)
     {
         _http = http;
-        _userStore = userStore;
-        _httpContextAccessor = httpContextAccessor;
         var canvas = options.Value;
-        _baseUrl = canvas.BaseUrl.TrimEnd('/');
         _configured = canvas.IsConfigured;
 
-        if (!string.IsNullOrWhiteSpace(_baseUrl))
+        if (_configured)
         {
-            _http.BaseAddress = new Uri($"{_baseUrl}/api/v1/");
-            if (!string.IsNullOrWhiteSpace(canvas.AccessToken))
-            {
-                _http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", canvas.AccessToken);
-            }
+            _http.BaseAddress = new Uri($"{canvas.BaseUrl.TrimEnd('/')}/api/v1/");
+            _http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", canvas.AccessToken);
             _http.DefaultRequestHeaders.UserAgent.ParseAdd("AssignmentManagementSystem/1.0");
         }
     }
 
-    private async Task EnsureConfiguredAsync()
+    private void EnsureConfigured()
     {
-        var email = _httpContextAccessor?.HttpContext?.Items["AuthenticatedEmail"] as string;
-        var userToken = email is not null && _userStore is not null
-            ? await _userStore.GetCanvasTokenAsync(email)
-            : null;
-
-        if (!string.IsNullOrWhiteSpace(userToken))
-        {
-            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
-            _configured = !string.IsNullOrWhiteSpace(_baseUrl);
-        }
-
         if (!_configured)
         {
             throw new ApiException(500,
@@ -83,7 +59,7 @@ public class CanvasService : ICanvasService
 
     public async Task<IReadOnlyList<CanvasCourse>> GetCoursesAsync()
     {
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
 
         return await GetJsonOrThrowAsync<List<CanvasCourse>>(
             "courses?enrollment_state=active&per_page=100") ?? [];
@@ -91,24 +67,19 @@ public class CanvasService : ICanvasService
 
     public async Task<IReadOnlyList<CanvasCourse>> GetAllCoursesAsync()
     {
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
         return await GetJsonOrThrowAsync<List<CanvasCourse>>(
             "courses?&per_page=100") ?? [];
     }
 
     public async Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId)
     {
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
 
-        var assignments = await GetJsonOrThrowAsync<List<CanvasAssignment>>(
+        return await GetJsonOrThrowAsync<List<CanvasAssignment>>(
             $"courses/{courseId}/assignments?per_page=100&order_by=due_at&include[]=submission") ?? [];
-
-        return assignments
-            .Where(assignment => !assignment.DueAt.HasValue || assignment.DueAt.Value > DateTimeOffset.UtcNow)
-            .ToList();
     }
 
-    public enum AssignmentStatus { Completed, Overdue, Uncompleted }
 
     public static AssignmentStatus Categorize(CanvasAssignment assignment, DateTimeOffset now)
     {
@@ -178,7 +149,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<IReadOnlyList<CanvasAnnouncement>> GetRecentAnnouncementsAsync()
     {
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
 
         var courses = await GetCoursesAsync();
         if (courses.Count == 0)
@@ -230,7 +201,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<CanvasCalendarEvent> CreateCalendarEventAsync(CreateCalendarEventRequest request)
     {
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
 
         string? contextCode = null;
 
@@ -324,7 +295,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<bool> DeleteCalendarEventAsync(long eventId)
     {
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
 
         var response = await _http.DeleteAsync($"calendar_events/{eventId}");
         return response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NotFound;
@@ -336,7 +307,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<IReadOnlyList<CanvasCalendarEvent>> GetCalendarEventsAsync()
     {
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
 
         try
         {
@@ -382,7 +353,7 @@ public class CanvasService : ICanvasService
             throw new ApiException(400, "Course code is required.");
         }
 
-        await EnsureConfiguredAsync();
+        EnsureConfigured();
 
         var courses = await GetAllCoursesAsync();
 
@@ -423,20 +394,21 @@ public class CanvasService : ICanvasService
         foreach (var course in courses)
         {
             var assignments = await GetAssignmentsForCourseAsync(course.Id);
-            var statuses = assignments.Select(a => Categorize(a, now)).ToList();
+            var statuses = assignments.Select(a => new AssignmentWithStatus { Assignment = a, Status = Categorize(a, now)}).ToList();
 
             summaries.Add(new CourseProgressSummary
             {
                 CourseId = course.Id,
                 CourseName = course.Name,
-                CompletedCount = statuses.Count(s =>s == AssignmentStatus.Completed),
-                OverdueCount = statuses.Count(s => s == AssignmentStatus.Overdue),
-                UncompletedCount = statuses.Count(s => s == AssignmentStatus.Uncompleted),
+                CompletedCount = statuses.Count(s => s.Status == AssignmentStatus.Completed),
+                OverdueCount = statuses.Count(s => s.Status == AssignmentStatus.Overdue),
+                UncompletedCount = statuses.Count(s => s.Status == AssignmentStatus.Uncompleted),
                 TotalCount = assignments.Count,
-                Assignments = assignments.ToList(),
+                Assignments = statuses,
             });
-        }
 
+            
+        }
         return summaries;
     }
     

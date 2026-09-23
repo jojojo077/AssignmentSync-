@@ -9,6 +9,8 @@ public interface ICanvasService
 
     Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId);
 
+    Task<IReadOnlyList<CourseProgressSummary>> GetAssignmentProgressAsync();
+
     Task<IReadOnlyList<CourseWithAssignments>> GetAllUpcomingAssignmentsAsync();
 
     Task<IReadOnlyList<CourseWithAssignments>> SearchAssignmentsByCourseCodeAsync(string courseCode);

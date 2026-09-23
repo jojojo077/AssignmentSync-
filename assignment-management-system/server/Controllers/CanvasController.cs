@@ -39,6 +39,13 @@ public class CanvasController(ICanvasService canvasService) : ControllerBase
         return Ok(data);
     }
 
+    [HttpGet("assignments/progress")]
+    public async Task<IActionResult> GetAssignmentProgress()
+    {
+        var data = await canvasService.GetAssignmentProgressAsync();
+        return Ok(data);
+    }
+
     [HttpGet("announcements")]
     public async Task<IActionResult> GetRecentAnnouncements()
     {
