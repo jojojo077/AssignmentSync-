@@ -408,8 +408,9 @@ public class CanvasService : ICanvasService
                 Assignments = assignments.ToList(),
             });
 
-            return summaries;
+            
         }
+        return summaries;
     }
     
 }

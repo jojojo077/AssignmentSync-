@@ -28,6 +28,9 @@ export const canvas = {
     getCourses: () => api.get('/canvas/courses'),
     getUpcomingAssignments: () => api.get('/canvas/assignments'),
     searchAssignmentsByCourseCode: (courseCode) => api.get('/canvas/assignments/search', { params: { courseCode } }),
+
+    getAssignmentProgress: () => api.get('/canvas/assignments/progress'),
+
     getAnnouncements: () => api.get('/canvas/announcements'),
     getCalendarEvents: () => api.get('/canvas/events'),
     getCustomEvents: () => {
@@ -126,7 +129,9 @@ export const canvas = {
     } catch {
       return [];
     }
-  },
+    },
+
+    
 };
 
 export const auth = {
