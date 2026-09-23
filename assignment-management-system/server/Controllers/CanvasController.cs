@@ -1,4 +1,5 @@
 using AMS.Api.Services;
+using AMS.Api.Middleware;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AMS.Api.Controllers;
@@ -9,6 +10,7 @@ namespace AMS.Api.Controllers;
 // send, so a guard here just blocks every request with 401.
 [ApiController]
 [Route("api/canvas")]
+[RequireAuth]
 public class CanvasController(ICanvasService canvasService) : ControllerBase
 {
     [HttpGet("courses")]

@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
 import Dashboard from '../pages/Dashboard';
-import { canvas } from '../services/api';
+import { canvas, progress } from '../services/api';
 
 vi.mock('../services/api', () => ({
   canvas: {
@@ -16,12 +16,17 @@ vi.mock('../services/api', () => ({
     setCompletedAssignments: vi.fn(),
     toggleAssignmentCompleted: vi.fn(),
   },
+  progress: {
+    getChecklist: vi.fn(() => Promise.resolve({ data: [] })),
+    setChecklist: vi.fn(() => Promise.resolve({ data: [] })),
+  },
 }));
 
 describe('Dashboard Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     canvas.getCompletedAssignments.mockReturnValue([]);
+    progress.getChecklist.mockResolvedValue({ data: [] });
   });
 
   //UT1: Successful fetch displays course list and assignment count
@@ -290,8 +295,8 @@ describe('Dashboard Component', () => {
     expect(screen.queryByText(/<p>|&nbsp;|&amp;/)).not.toBeInTheDocument();
   });
 
-  //UT12: Canvas submission flags seed semester progress
-  it('seeds semester progress from completed assignments returned by Canvas', async () => {
+  //UT12: Canvas submission flags seed the authenticated user's semester progress
+  it('seeds semester progress and saves it for the authenticated user', async () => {
     const mockData = [
       {
         courseId: 101,
@@ -313,6 +318,6 @@ describe('Dashboard Component', () => {
       expect(screen.getByText('1 of 2 assignments completed this semester')).toBeInTheDocument();
     });
     expect(screen.getByRole('checkbox', { name: /mark assignment 1 as incomplete/i })).toBeChecked();
-    expect(canvas.setCompletedAssignments).toHaveBeenCalledWith(['1']);
+    expect(progress.setChecklist).toHaveBeenCalledWith(['1']);
   });
 });

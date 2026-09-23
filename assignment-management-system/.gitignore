@@ -13,6 +13,11 @@ server.Tests/obj/
 *.env
 !.env.example
 
+# Local file-backed user credentials, Canvas tokens, and checklist progress
+server/data/
+**/data/
+**/users.txt
+
 # Build output
 dist/
 build/

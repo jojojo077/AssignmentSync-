@@ -30,25 +30,49 @@ namespace AMS.Api.Services;
 public class CanvasService : ICanvasService
 {
     private readonly HttpClient _http;
-    private readonly bool _configured;
+    private bool _configured;
+    private readonly UserFileStore? _userStore;
+    private readonly IHttpContextAccessor? _httpContextAccessor;
+    private readonly string _baseUrl;
 
-    public CanvasService(HttpClient http, IOptions<CanvasOptions> options)
+    public CanvasService(
+        HttpClient http,
+        IOptions<CanvasOptions> options,
+        UserFileStore? userStore = null,
+        IHttpContextAccessor? httpContextAccessor = null)
     {
         _http = http;
+        _userStore = userStore;
+        _httpContextAccessor = httpContextAccessor;
         var canvas = options.Value;
+        _baseUrl = canvas.BaseUrl.TrimEnd('/');
         _configured = canvas.IsConfigured;
 
-        if (_configured)
+        if (!string.IsNullOrWhiteSpace(_baseUrl))
         {
-            _http.BaseAddress = new Uri($"{canvas.BaseUrl.TrimEnd('/')}/api/v1/");
-            _http.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", canvas.AccessToken);
+            _http.BaseAddress = new Uri($"{_baseUrl}/api/v1/");
+            if (!string.IsNullOrWhiteSpace(canvas.AccessToken))
+            {
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", canvas.AccessToken);
+            }
             _http.DefaultRequestHeaders.UserAgent.ParseAdd("AssignmentManagementSystem/1.0");
         }
     }
 
-    private void EnsureConfigured()
+    private async Task EnsureConfiguredAsync()
     {
+        var email = _httpContextAccessor?.HttpContext?.Items["AuthenticatedEmail"] as string;
+        var userToken = email is not null && _userStore is not null
+            ? await _userStore.GetCanvasTokenAsync(email)
+            : null;
+
+        if (!string.IsNullOrWhiteSpace(userToken))
+        {
+            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);
+            _configured = !string.IsNullOrWhiteSpace(_baseUrl);
+        }
+
         if (!_configured)
         {
             throw new ApiException(500,
@@ -59,7 +83,7 @@ public class CanvasService : ICanvasService
 
     public async Task<IReadOnlyList<CanvasCourse>> GetCoursesAsync()
     {
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
 
         return await GetJsonOrThrowAsync<List<CanvasCourse>>(
             "courses?enrollment_state=active&per_page=100") ?? [];
@@ -67,17 +91,21 @@ public class CanvasService : ICanvasService
 
     public async Task<IReadOnlyList<CanvasCourse>> GetAllCoursesAsync()
     {
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
         return await GetJsonOrThrowAsync<List<CanvasCourse>>(
             "courses?&per_page=100") ?? [];
     }
 
     public async Task<IReadOnlyList<CanvasAssignment>> GetAssignmentsForCourseAsync(long courseId)
     {
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
 
-        return await GetJsonOrThrowAsync<List<CanvasAssignment>>(
+        var assignments = await GetJsonOrThrowAsync<List<CanvasAssignment>>(
             $"courses/{courseId}/assignments?per_page=100&order_by=due_at&include[]=submission") ?? [];
+
+        return assignments
+            .Where(assignment => !assignment.DueAt.HasValue || assignment.DueAt.Value > DateTimeOffset.UtcNow)
+            .ToList();
     }
 
     public enum AssignmentStatus { Completed, Overdue, Uncompleted }
@@ -150,7 +178,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<IReadOnlyList<CanvasAnnouncement>> GetRecentAnnouncementsAsync()
     {
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
 
         var courses = await GetCoursesAsync();
         if (courses.Count == 0)
@@ -202,7 +230,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<CanvasCalendarEvent> CreateCalendarEventAsync(CreateCalendarEventRequest request)
     {
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
 
         string? contextCode = null;
 
@@ -296,7 +324,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<bool> DeleteCalendarEventAsync(long eventId)
     {
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
 
         var response = await _http.DeleteAsync($"calendar_events/{eventId}");
         return response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NotFound;
@@ -308,7 +336,7 @@ public class CanvasService : ICanvasService
     /// </summary>
     public async Task<IReadOnlyList<CanvasCalendarEvent>> GetCalendarEventsAsync()
     {
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
 
         try
         {
@@ -354,7 +382,7 @@ public class CanvasService : ICanvasService
             throw new ApiException(400, "Course code is required.");
         }
 
-        EnsureConfigured();
+        await EnsureConfiguredAsync();
 
         var courses = await GetAllCoursesAsync();
 
@@ -407,9 +435,9 @@ public class CanvasService : ICanvasService
                 TotalCount = assignments.Count,
                 Assignments = assignments.ToList(),
             });
-
-            return summaries;
         }
+
+        return summaries;
     }
     
 }

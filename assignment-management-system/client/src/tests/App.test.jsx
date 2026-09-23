@@ -2,20 +2,20 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import App from '../App';
 
-// Dashboard fetches on mount — mock it so this smoke test doesn't make a
-// real network call (and doesn't depend on the server being up).
+// Login renders first, so this smoke test does not need a running server.
 vi.mock('../services/api', () => ({
   canvas: { getUpcomingAssignments: vi.fn().mockResolvedValue({ data: [] }) },
+  progress: { getChecklist: vi.fn().mockResolvedValue({ data: [] }), setChecklist: vi.fn() },
   auth: { login: vi.fn(), register: vi.fn() },
   health: { check: vi.fn() },
 }));
 
 describe('App', () => {
-  it('renders the dashboard by default with nav links', () => {
+  it('renders the login page first', () => {
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /calendar/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /assignments/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /log in/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
   });
 });

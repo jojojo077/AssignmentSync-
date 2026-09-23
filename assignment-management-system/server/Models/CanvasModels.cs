@@ -58,7 +58,7 @@ public class CourseWithAssignments
 public class CourseProgressSummary
 {
     public long CourseId { get; set; }
-    public string CourseName { get; set; }
+    public string CourseName { get; set; } = string.Empty;
     public int CompletedCount { get; set; }
     public int OverdueCount { get; set; }
     public int UncompletedCount { get; set; }

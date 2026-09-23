@@ -30,18 +30,20 @@ describe('Login Component', () => {
 
     const emailInput = screen.getByLabelText(/email/i);
     const passwordInput = screen.getByLabelText(/password/i);
+    const canvasTokenInput = screen.getByLabelText(/canvas access token/i);
     const submitBtn = screen.getByRole('button', { name: /log in/i });
 
     fireEvent.change(emailInput, { target: { value: 'student@autuni.ac.nz' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.change(canvasTokenInput, { target: { value: 'canvas-token-1' } });
     fireEvent.click(submitBtn);
 
-    expect(auth.login).toHaveBeenCalledWith('student@autuni.ac.nz', 'password123');
+    expect(auth.login).toHaveBeenCalledWith('student@autuni.ac.nz', 'password123', 'canvas-token-1');
 
     await waitFor(() => {
       const alert = screen.getByRole('alert');
       expect(alert).toBeInTheDocument();
-      expect(alert).toHaveTextContent(/backend auth is still a placeholder/i);
+      expect(alert).toHaveTextContent(/unable to log in/i);
     });
   });
 });
