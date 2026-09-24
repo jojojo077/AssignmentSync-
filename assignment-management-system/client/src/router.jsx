@@ -44,7 +44,7 @@ const router = createBrowserRouter([
       },
     ],
     {
-        basename: '/assignment-management-system/',
+        basename: '/AssignmentSync-/',
 });
 
 export default router;

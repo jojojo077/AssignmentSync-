@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\vite.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assignment-management-system\\client\\vite.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\src\\router.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assignment-management-system\\client\\src\\router.jsx||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\vite.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:assignment-management-system\\client\\vite.config.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,26 +26,26 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "router.jsx",
               "DocumentMoniker": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\src\\router.jsx",
               "RelativeDocumentMoniker": "assignment-management-system\\client\\src\\router.jsx",
               "ToolTip": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\src\\router.jsx",
               "RelativeToolTip": "assignment-management-system\\client\\src\\router.jsx",
-              "ViewState": "AgIAABgAAAAAAAAAAAAAAC0AAAAEAAAAAAAAAA==",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAAC4AAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
               "WhenOpened": "2026-09-24T04:06:36.791Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "vite.config.js",
               "DocumentMoniker": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\vite.config.js",
               "RelativeDocumentMoniker": "assignment-management-system\\client\\vite.config.js",
               "ToolTip": "C:\\Users\\Dante Leyting\\Documents\\GitHub\\AssignmentSync-\\assignment-management-system\\client\\vite.config.js",
               "RelativeToolTip": "assignment-management-system\\client\\vite.config.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAApAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-09-24T04:03:02.902Z",
               "EditorCaption": ""
