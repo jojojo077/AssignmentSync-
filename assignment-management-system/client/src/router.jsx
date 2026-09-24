@@ -30,18 +30,21 @@ function LoginRoute() {
 }
 
 const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Layout />,
-    children: [
-      { index: true, element: <IndexRoute /> },
-      { path: 'calendar', element: <ProtectedRoute><Calendar /></ProtectedRoute> },
-      { path: 'search', element: <ProtectedRoute><SearchAssignments /></ProtectedRoute> },
-      { path: 'assignments', element: <ProtectedRoute><Assignments /></ProtectedRoute> },
-      { path: 'login', element: <LoginRoute /> },
-      { path: '*', element: <NotFound /> },
+    {
+        path: '/',
+        element: <Layout />,
+        children: [
+            { index: true, element: <IndexRoute /> },
+            { path: 'calendar', element: <ProtectedRoute><Calendar /></ProtectedRoute> },
+            { path: 'search', element: <ProtectedRoute><SearchAssignments /></ProtectedRoute> },
+            { path: 'assignments', element: <ProtectedRoute><Assignments /></ProtectedRoute> },
+            { path: 'login', element: <LoginRoute /> },
+            { path: '*', element: <NotFound /> },
+        ], 
+      },
     ],
-  },
-]);
+    {
+        basename: '/assignment-management-system/',
+});
 
 export default router;
