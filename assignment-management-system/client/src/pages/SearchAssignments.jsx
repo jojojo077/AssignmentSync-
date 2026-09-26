@@ -130,10 +130,11 @@ export default function SearchAssignments() {
                                                     {item.due_at && (
                                                         <span className="dashboard-assignment-subitem__date">
                                                             Due{' '}
-                                                            {new Date(item.due_at).toLocaleDateString(undefined, {
+                                                            {new Date(item.due_at).toLocaleDateString('en-US', {
                                                                 month: 'short',
                                                                 day: 'numeric',
                                                                 year: 'numeric',
+                                                                timeZone: 'UTC',
                                                             })}
                                                         </span>
                                                     )}

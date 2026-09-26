@@ -35,14 +35,11 @@ export default function Login() {
         ? Object.values(validationErrors).flat().join(' ')
         : null;
       const serverMessage = requestError.response?.data?.message || validationMessage;
+      const fallbackMessage = isRegistering
+        ? 'Unable to create the account.'
+        : 'Unable to log in. Check your email and password.';
 
-      setError(
-        serverMessage ||
-        requestError.message ||
-        (isRegistering
-          ? requestError.message || 'Unable to create the account.'
-          : requestError.message || 'Unable to log in. Check your email and password.')
-      );
+      setError(serverMessage || fallbackMessage);
     } finally {
       setIsSubmitting(false);
     }

@@ -44,7 +44,7 @@ const router = createBrowserRouter([
       },
     ],
     {
-        basename: '/AssignmentSync-/',
+        basename: import.meta.env.MODE === 'test' ? '/' : (import.meta.env.BASE_URL || '/'),
 });
 
 export default router;

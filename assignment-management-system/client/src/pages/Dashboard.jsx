@@ -278,7 +278,7 @@ export default function Dashboard() {
                               <span className="dashboard-assignment-subitem__name">{item.name}</span>
                               {item.due_at && (
                                 <span className="dashboard-assignment-subitem__date">
-                                  Due {new Date(item.due_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                  Due {new Date(item.due_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
                                 </span>
                               )}
                             </div>
@@ -433,7 +433,7 @@ export default function Dashboard() {
                                 <span className="checklist-item__course">{item.courseName}</span>
                                 {item.due_at && (
                                   <span className="checklist-item__due">
-                                    {new Date(item.due_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    {new Date(item.due_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}
                                   </span>
                                 )}
                               </div>
