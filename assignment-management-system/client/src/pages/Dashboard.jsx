@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { canvas, progress } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 /**
  * Strips HTML tags and unescapes common entities for a clean text preview.
@@ -59,6 +60,7 @@ function getProgressMotivation(pct) {
  * Overview of upcoming assignments, deadlines, and recent announcements.
  */
 export default function Dashboard() {
+  const { user, logout } = useAuth();
   const [assignments, setAssignments] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | loading | error | ready
 
@@ -218,6 +220,17 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        <div className="dashboard-header__account">
+          {user?.name && (
+            <span className="dashboard-header__user">
+              Signed in as <strong>{user.name}</strong>
+            </span>
+          )}
+          <button type="button" className="btn btn--outline" onClick={logout}>
+            Log out
+          </button>
+        </div>
       </header>
 
       {/* Main Grid: Left = Course Workload, Centre = Progress, Right = Announcements */}

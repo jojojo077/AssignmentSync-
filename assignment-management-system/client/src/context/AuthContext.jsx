@@ -25,6 +25,8 @@ export function AuthProvider({ children }) {
   const logout = useCallback(() => {
     localStorage.removeItem('ams_token');
     localStorage.removeItem('ams_user');
+    // Offline calendar cache belongs to this user - don't leave it for the next one.
+    localStorage.removeItem('ams_custom_events');
     setToken(null);
     setUser(null);
   }, []);

@@ -17,6 +17,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import Dashboard from '../pages/Dashboard';
 import Assignments from '../pages/Assignments';
 import { mockServer, networkError } from './helpers/mockServer';
+import { renderWithAuth } from './helpers/renderHelpers';
 
 let server;
 beforeEach(() => {
@@ -42,7 +43,7 @@ describe('Workload - Dashboard summary (FR-06)', () => {
       { courseId: 101, courseName: 'SQA', assignments: [{ id: 1, name: 'A1' }, { id: 2, name: 'A2' }] },
       { courseId: 202, courseName: 'Data Structures', assignments: [{ id: 3, name: 'Lab 1' }] },
     ]);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       const badge = screen.getByText('Assignments').closest('.dashboard-stat-badge');
@@ -59,7 +60,7 @@ describe('Workload - Dashboard summary (FR-06)', () => {
         assignments: [{ id: 3, name: 'Binary Tree Lab', due_at: '2026-10-10T23:59:00Z', points_possible: 30 }],
       },
     ]);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       const item = screen.getAllByText('Binary Tree Lab')[0].closest('.dashboard-assignment-subitem');

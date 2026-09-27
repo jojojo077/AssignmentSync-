@@ -10,27 +10,14 @@
 // real router (src/router.jsx) via <App />, and the real axios client in
 // src/services/api.js. Only the network is faked (see helpers/mockServer.js).
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Login from '../pages/Login';
 import { AuthProvider, useAuth } from '../context/AuthContext';
 import { canvas } from '../services/api';
 import { mockServer, status, networkError } from './helpers/mockServer';
-
-// Renders the real <App /> (and therefore the real router + route guards) at
-// a given URL. The router is created when router.jsx is first imported, so
-// the module graph is reset and re-imported after setting the URL.
-async function renderAppAt(path, { token, routes = {} } = {}) {
-  if (token) localStorage.setItem('ams_token', token);
-  window.history.pushState({}, '', path);
-  vi.resetModules();
-  const { default: freshApi } = await import('../services/api');
-  const server = mockServer(routes, freshApi);
-  const { default: App } = await import('../App');
-  render(<App />);
-  return server;
-}
+import { renderAppAt } from './helpers/renderHelpers';
 
 function renderLogin() {
   return render(
@@ -206,10 +193,10 @@ describe('Auth - AuthContext', () => {
 describe('Auth - protected routes', () => {
   // TC-25 | FR-01 | Existing session token is restored on load
   it('TC-25: restores a stored session token and shows the dashboard instead of the login page', async () => {
-    server = await renderAppAt('/', {
+    ({ server } = await renderAppAt('/', {
       token: 'existing-token',
       routes: { 'GET /canvas/assignments': [], 'GET /canvas/announcements': [], 'GET /progress/checklist': [] },
-    });
+    }));
 
     expect(await screen.findByRole('heading', { name: /^dashboard$/i })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: /log in/i })).not.toBeInTheDocument();
@@ -217,7 +204,7 @@ describe('Auth - protected routes', () => {
 
   // TC-26 | FR-01 | Unauthorised users cannot access protected pages
   it('TC-26: redirects an unauthenticated user from /calendar to the login page', async () => {
-    server = await renderAppAt('/calendar');
+    ({ server } = await renderAppAt('/calendar'));
 
     expect(await screen.findByRole('heading', { name: /log in/i })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: /assignment calendar/i })).not.toBeInTheDocument();
@@ -228,10 +215,10 @@ describe('Auth - protected routes', () => {
 
   // TC-27 | FR-01 | Authenticated users can access protected pages
   it('TC-27: lets an authenticated user open the protected /calendar page', async () => {
-    server = await renderAppAt('/calendar', {
+    ({ server } = await renderAppAt('/calendar', {
       token: 'valid-token',
       routes: { 'GET /canvas/assignments': [], 'GET /canvas/events': [] },
-    });
+    }));
 
     expect(await screen.findByRole('heading', { name: /assignment calendar/i })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: /log in/i })).not.toBeInTheDocument();

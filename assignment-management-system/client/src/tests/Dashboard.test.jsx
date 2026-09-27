@@ -12,9 +12,10 @@
 // Only HTTP is faked (see helpers/mockServer.js).
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, within, fireEvent } from '@testing-library/react';
+import { screen, waitFor, within, fireEvent } from '@testing-library/react';
 import Dashboard from '../pages/Dashboard';
 import { mockServer, networkError } from './helpers/mockServer';
+import { renderWithAuth } from './helpers/renderHelpers';
 
 let server;
 function startServer({ assignments = [], announcements = [], checklist = [] } = {}) {
@@ -53,7 +54,7 @@ describe('Dashboard - content (FR-03)', () => {
   // TC-05 | FR-03 | Renders list of courses and assignment count
   it('TC-05: shows a loading state then the course list with assignment counts', async () => {
     startServer({ assignments: SQA_TWO });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     expect(screen.getByText(/loading assignments.../i)).toBeInTheDocument();
 
@@ -72,7 +73,7 @@ describe('Dashboard - content (FR-03)', () => {
         { courseId: 303, courseName: 'Algorithms', assignments: [{ id: 3, name: 'T3' }] },
       ],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       const badge = screen.getByText('Active Courses').closest('.dashboard-stat-badge');
@@ -95,7 +96,7 @@ describe('Dashboard - content (FR-03)', () => {
         },
       ],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /recent announcements/i })).toBeInTheDocument();
@@ -108,7 +109,7 @@ describe('Dashboard - content (FR-03)', () => {
   // TC-07 | FR-03 | Empty announcement message
   it('TC-07: displays an empty message when no announcements are returned', async () => {
     startServer();
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     expect(await screen.findByText(/no recent announcements/i)).toBeInTheDocument();
   });
@@ -127,7 +128,7 @@ describe('Dashboard - content (FR-03)', () => {
         },
       ],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await screen.findByText('Project Submission Deadline Reminder');
     fireEvent.click(screen.getByRole('button', { name: /read full announcement/i }));
@@ -152,7 +153,7 @@ describe('Dashboard - content (FR-03)', () => {
         },
       ],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     expect(await screen.findByText('Library closes at 8pm & reopens at 9am.')).toBeInTheDocument();
     expect(screen.queryByText(/<p>|&nbsp;|&amp;/)).not.toBeInTheDocument();
@@ -166,7 +167,7 @@ describe('Dashboard - progress tracking (FR-08)', () => {
   // TC-15 | FR-08 | Semester progress column and progress bar
   it('TC-15: renders the semester progress column with heading and a 0% progress bar', async () => {
     startServer({ assignments: SQA_TWO });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /semester progress/i })).toBeInTheDocument();
@@ -179,7 +180,7 @@ describe('Dashboard - progress tracking (FR-08)', () => {
   // TC-16 | FR-08 | Toggling an assignment updates and saves progress
   it('TC-16: updates the completed percentage and saves the checklist when an assignment is ticked', async () => {
     startServer({ assignments: SQA_TWO });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0'));
 
@@ -192,7 +193,7 @@ describe('Dashboard - progress tracking (FR-08)', () => {
   // TC-45 | FR-08 | Saved checklist is restored from the server
   it("TC-45: restores the user's saved checklist from the server on load", async () => {
     startServer({ assignments: SQA_TWO, checklist: ['2'] });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
@@ -209,7 +210,7 @@ describe('Dashboard - progress tracking (FR-08)', () => {
         { courseId: 202, courseName: 'Data Structures', assignments: [{ id: 3, name: 'Lab 1' }, { id: 4, name: 'Lab 2' }] },
       ],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       const section = screen.getByRole('region', { name: /semester assignment progress/i });
@@ -223,7 +224,7 @@ describe('Dashboard - progress tracking (FR-08)', () => {
   // TC-18 | FR-08 | Empty progress state
   it('TC-18: shows an empty state in the progress column when there are no assignments', async () => {
     startServer();
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     expect(await screen.findByText(/no assignments to track/i)).toBeInTheDocument();
   });
@@ -242,7 +243,7 @@ describe('Dashboard - progress tracking (FR-08)', () => {
         },
       ],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
@@ -263,7 +264,7 @@ describe('Dashboard - progress tracking (FR-08)', () => {
         },
       ],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     expect(await screen.findByText(/all caught up/i)).toBeInTheDocument();
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
@@ -281,7 +282,7 @@ describe('Dashboard - error handling (NFR-03)', () => {
       'GET /canvas/announcements': [],
       'GET /progress/checklist': [],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       const alert = screen.getAllByRole('alert').find((el) => el.textContent.includes('load assignments'));
@@ -299,7 +300,7 @@ describe('Dashboard - error handling (NFR-03)', () => {
       'GET /progress/checklist': [],
       'PUT /progress/checklist': [],
     });
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       expect(screen.getAllByText(/Software Quality Assurance/i).length).toBeGreaterThan(0);

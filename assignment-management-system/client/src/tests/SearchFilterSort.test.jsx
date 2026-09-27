@@ -21,6 +21,7 @@ import SearchAssignments from '../pages/SearchAssignments';
 import Dashboard from '../pages/Dashboard';
 import Calendar from '../pages/Calendar';
 import { mockServer, status } from './helpers/mockServer';
+import { renderWithAuth } from './helpers/renderHelpers';
 
 let server;
 beforeEach(() => {
@@ -169,7 +170,7 @@ describe('Filter - by completion status', () => {
   // TC-61 | FR-07 | "All" filter shows every assignment by default
   it('TC-61: shows every assignment in the checklist with the default "All" filter', async () => {
     startDashboard(MIXED);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     await waitFor(() => {
       expect(essay()).toBeInTheDocument();
@@ -181,7 +182,7 @@ describe('Filter - by completion status', () => {
   // TC-62 | FR-07 | "Completed" filter
   it('TC-62: shows only completed assignments when "Completed" is selected', async () => {
     startDashboard(MIXED);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     fireEvent.click(await screen.findByRole('button', { name: /^completed$/i }));
 
@@ -194,7 +195,7 @@ describe('Filter - by completion status', () => {
   // TC-63 | FR-07 | "Pending" filter
   it('TC-63: shows only pending assignments when "Pending" is selected', async () => {
     startDashboard(MIXED);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     fireEvent.click(await screen.findByRole('button', { name: /^pending$/i }));
 
@@ -207,7 +208,7 @@ describe('Filter - by completion status', () => {
   // TC-64 | FR-07 | Switching back to "All" restores the list
   it('TC-64: restores all checklist items when switching from "Pending" back to "All"', async () => {
     startDashboard(MIXED);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     fireEvent.click(await screen.findByRole('button', { name: /^pending$/i }));
     await waitFor(() => expect(essay()).not.toBeInTheDocument());
@@ -224,7 +225,7 @@ describe('Filter - by completion status', () => {
     startDashboard([
       { courseId: 101, courseName: 'SQA', assignments: [{ id: 1, name: 'SQA Essay', due_at: '2026-10-05T23:59:00Z' }] },
     ]);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     fireEvent.click(await screen.findByRole('button', { name: /^completed$/i }));
 
@@ -240,7 +241,7 @@ describe('Filter - by completion status', () => {
         assignments: [{ id: 1, name: 'SQA Essay', due_at: '2026-10-05T23:59:00Z', has_submitted_submissions: true }],
       },
     ]);
-    render(<Dashboard />);
+    renderWithAuth(<Dashboard />);
 
     fireEvent.click(await screen.findByRole('button', { name: /^pending$/i }));
 
