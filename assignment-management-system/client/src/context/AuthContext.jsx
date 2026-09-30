@@ -43,10 +43,10 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 /**
  * Access the auth context. Throws if used outside <AuthProvider>.
  */
+// oxlint-disable-next-line react/only-export-components -- hook is co-located with its provider
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within an AuthProvider');

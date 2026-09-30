@@ -1,44 +1,10 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import Dashboard from './pages/Dashboard';
 import Calendar from './pages/Calendar';
 import Assignments from './pages/Assignments';
 import SearchAssignments from './pages/SearchAssignments';
-import Login from './pages/Login';
 import NotFound from './pages/NotFound';
-import { useAuth } from './context/AuthContext';
-
-/**
- * "/" shows the Dashboard when signed in, otherwise the Login page
- * (rendered in place rather than redirecting).
- */
-function IndexRoute() {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <Dashboard /> : <Login />;
-}
-
-/**
- * Guards a route: renders its children only when authenticated,
- * otherwise redirects to /login.
- */
-function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-}
-
-/**
- * /login - sends already-authenticated users back to the dashboard.
- */
-function LoginRoute() {
-  const { isAuthenticated } = useAuth();
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-  return <Login />;
-}
+import { IndexRoute, ProtectedRoute, LoginRoute } from './components/routing/RouteGuards';
 
 // All pages render inside Layout (navbar + content area).
 const router = createBrowserRouter([
