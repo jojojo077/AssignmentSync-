@@ -1,5 +1,15 @@
 import { useState } from 'react';
 
+/**
+ * Modal form for creating a custom (personal) calendar event.
+ *
+ * Props:
+ *  - isOpen:  whether the modal is shown
+ *  - onClose: called when the modal is dismissed or after a successful save
+ *  - onSave:  receives { name, due_at, courseId, courseName, points_possible }
+ *  - courses: Canvas courses; if the category typed matches a course name the
+ *             event is linked to that course, otherwise it is a Personal Event
+ */
 export default function AddEventModal({ isOpen, onClose, onSave, courses = [] }) {
   const [name, setName] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -10,6 +20,7 @@ export default function AddEventModal({ isOpen, onClose, onSave, courses = [] })
 
   if (!isOpen) return null;
 
+  // Validate required fields, build the event payload and hand it to the parent.
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) {
@@ -21,9 +32,11 @@ export default function AddEventModal({ isOpen, onClose, onSave, courses = [] })
       return;
     }
 
+    // Combine the local date and time inputs into a UTC ISO string.
     const due_at = new Date(`${dueDate}T${dueTime || '23:59'}:00`).toISOString();
 
     const selectedCourseObj = courses.find((c) => c.courseName === courseName);
+    // 99999 is the pseudo-course ID used for Personal Events throughout the calendar.
     const courseId = selectedCourseObj ? selectedCourseObj.courseId : 99999;
 
     onSave({
@@ -45,6 +58,7 @@ export default function AddEventModal({ isOpen, onClose, onSave, courses = [] })
   };
 
   return (
+    // Clicking the overlay closes the modal; clicks inside the card are stopped from bubbling up.
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="add-event-title">
       <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ borderTop: '4px solid #0284c7' }}>
         <div className="modal-card__header">

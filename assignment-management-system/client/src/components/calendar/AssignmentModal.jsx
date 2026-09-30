@@ -1,8 +1,17 @@
 import { formatDateTime, getCourseColor } from '../../utils/calendarUtils';
 
+/**
+ * Detail popup for a single assignment or calendar event.
+ *
+ * Props:
+ *  - assignment: the item to show; renders nothing when null
+ *  - onClose:    dismisses the modal
+ *  - onDelete:   optional; when provided (custom events only) a Delete button is shown
+ */
 export default function AssignmentModal({ assignment, onClose, onDelete }) {
   if (!assignment) return null;
 
+  // Tint the modal with the same colour the course uses in the calendar views.
   const color = getCourseColor(assignment.courseId);
 
   return (

@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { auth } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
+/**
+ * Login / registration page. One form handles both modes (toggled by the
+ * tabs or footer link); registration additionally requires a name and a
+ * Canvas access token. On success the session is stored via AuthContext
+ * and the user is sent to the dashboard.
+ */
 export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState('');
@@ -17,6 +23,7 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Submit to the login or register endpoint depending on the current mode.
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
@@ -30,6 +37,7 @@ export default function Login() {
       login(res.data.token, res.data.user);
       navigate('/');
     } catch (requestError) {
+      // Prefer the server's message, then any model-validation errors, then a generic fallback.
       const validationErrors = requestError.response?.data?.errors;
       const validationMessage = validationErrors
         ? Object.values(validationErrors).flat().join(' ')

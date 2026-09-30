@@ -2,6 +2,11 @@ import { createContext, useContext, useState, useCallback } from 'react';
 
 const AuthContext = createContext(null);
 
+/**
+ * Holds the signed-in user's JWT and profile. Both are persisted to
+ * localStorage (ams_token / ams_user) so a session survives a page reload;
+ * services/api.js reads the same token to authorise requests.
+ */
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('ams_token'));
   const [user, setUser] = useState(() => {
@@ -13,6 +18,7 @@ export function AuthProvider({ children }) {
     }
   });
 
+  // Store a new session after a successful login/register.
   const login = useCallback((nextToken, nextUser) => {
     localStorage.setItem('ams_token', nextToken);
     if (nextUser) {
@@ -22,6 +28,7 @@ export function AuthProvider({ children }) {
     setUser(nextUser || null);
   }, []);
 
+  // Clear the session and any per-user cached data.
   const logout = useCallback(() => {
     localStorage.removeItem('ams_token');
     localStorage.removeItem('ams_user');
@@ -37,6 +44,9 @@ export function AuthProvider({ children }) {
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
+/**
+ * Access the auth context. Throws if used outside <AuthProvider>.
+ */
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within an AuthProvider');

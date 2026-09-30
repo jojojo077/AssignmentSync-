@@ -7,14 +7,22 @@ import AgendaView from '../components/calendar/AgendaView';
 import AssignmentModal from '../components/calendar/AssignmentModal';
 import AddEventModal from '../components/calendar/AddEventModal';
 
+/**
+ * Calendar page - combines Canvas assignments, Canvas calendar events and
+ * locally created events into month, week and agenda views, with per-course
+ * filtering and add/delete for custom events.
+ *
+ * Canvas calendar events and custom events are grouped under a "Personal
+ * Events" pseudo-course with ID 99999.
+ */
 export default function Calendar() {
   const [coursesWithAssignments, setCoursesWithAssignments] = useState([]);
   const [customEvents, setCustomEvents] = useState([]);
   const [status, setStatus] = useState('idle'); // idle | loading | error | ready
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [viewMode, setViewMode] = useState('month'); // month | week | agenda
-  const [selectedCourseIds, setSelectedCourseIds] = useState([]);
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
+  const [selectedCourseIds, setSelectedCourseIds] = useState([]); // courses currently shown
+  const [selectedAssignment, setSelectedAssignment] = useState(null); // item open in the detail modal
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // Synchronize both Canvas calendar events and assignments
@@ -43,6 +51,7 @@ export default function Calendar() {
           const offlineDrafts = retainedLocalDrafts.filter((e) => String(e.id).startsWith('custom_'));
           setCustomEvents([...liveCanvasEvents, ...offlineDrafts]);
         })
+        // Canvas unavailable - fall back to events cached in localStorage.
         .catch(() => {
           const loadedCustomEvents = canvas.getCustomEvents ? canvas.getCustomEvents() : [];
           setCustomEvents(loadedCustomEvents);
@@ -58,6 +67,7 @@ export default function Calendar() {
       .then((res) => {
         const data = res.data || [];
         setCoursesWithAssignments(data);
+        // On first load, show every course (plus Personal Events); keep the user's filter on later syncs.
         setSelectedCourseIds((prev) => {
           if (prev.length === 0) {
             return [...data.map((c) => c.courseId), 99999];
@@ -125,6 +135,7 @@ export default function Calendar() {
   // Add custom event handler
   const handleSaveEvent = (eventData) => {
     if (canvas.addEvent) {
+      // Make sure Personal Events is visible so the new event actually appears.
       canvas.addEvent(eventData).then((res) => {
         const created = res.data;
         setCustomEvents((prev) => [...prev, created]);
@@ -133,6 +144,7 @@ export default function Calendar() {
         }
       });
     } else {
+      // No API available - keep the event locally as an offline draft.
       const created = { ...eventData, id: `custom_${Date.now()}`, isCustom: true };
       setCustomEvents((prev) => [...prev, created]);
     }
@@ -149,7 +161,7 @@ export default function Calendar() {
     }
   };
 
-  // Navigation Handlers
+  // Navigation handlers - step by a week in week view, otherwise by a month.
   const handlePrev = () => {
     setCurrentDate((prev) => {
       const d = new Date(prev);
@@ -185,7 +197,7 @@ export default function Calendar() {
         <p>View coursework, deadlines, and manage your academic workload.</p>
       </div>
 
-          {status === 'loading' && <p className="calendar-status">Loading calendar data...</p>}
+      {status === 'loading' && <p className="calendar-status">Loading calendar data...</p>}
 
       {status === 'error' && (
         <div className="calendar-error" role="alert">
@@ -197,6 +209,7 @@ export default function Calendar() {
         </div>
       )}
 
+      {/* Toolbar and the active view are only shown once data has loaded */}
       {status === 'ready' && (
         <>
           <CalendarHeader
@@ -240,6 +253,7 @@ export default function Calendar() {
         </>
       )}
 
+      {/* Modals render nothing until opened */}
       <AssignmentModal
         assignment={selectedAssignment}
         onClose={() => setSelectedAssignment(null)}
