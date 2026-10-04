@@ -2,9 +2,19 @@ import { getMonthGrid, isSameDay, isToday, getCourseColor, formatTimeOnly } from
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+/**
+ * Month grid view. Each day cell shows up to three assignment pills and a
+ * "+N more" indicator for any overflow.
+ *
+ * Props:
+ *  - currentDate:        any date within the month to display
+ *  - assignmentsByDate:  flattened, already-filtered assignments/events
+ *  - onSelectAssignment: called with an item when its pill is clicked
+ */
 export default function MonthView({ currentDate, assignmentsByDate, onSelectAssignment }) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
+  // Includes leading/trailing days from adjacent months to fill whole weeks.
   const daysGrid = getMonthGrid(year, month);
 
   return (

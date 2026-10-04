@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using AMS.Api.Config;
+using AMS.Api.Models;
 using AMS.Api.Services;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -35,6 +36,11 @@ public class CanvasServiceTests
         Assert.Contains(assignments, assignment => assignment.Id == 1 && assignment.Name == "Overdue assignment");
         Assert.Contains(assignments, assignment => assignment.Id == 2 && assignment.Name == "Future assignment");
         Assert.Contains(assignments, assignment => assignment.Id == 3 && assignment.Name == "No due date");
+        // Overdue assignments are kept and flagged rather than filtered out.
+        var now = DateTimeOffset.UtcNow;
+        Assert.Equal(AssignmentStatus.Overdue, CanvasService.Categorize(assignments.Single(a => a.Id == 1), now));
+        Assert.Equal(AssignmentStatus.Uncompleted, CanvasService.Categorize(assignments.Single(a => a.Id == 2), now));
+        Assert.Equal(AssignmentStatus.Uncompleted, CanvasService.Categorize(assignments.Single(a => a.Id == 3), now));
     }
 
     private sealed class StubCanvasHandler(string responseBody) : HttpMessageHandler

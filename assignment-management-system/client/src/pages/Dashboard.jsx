@@ -58,6 +58,10 @@ function getProgressMotivation(pct) {
 
 /**
  * Overview of upcoming assignments, deadlines, and recent announcements.
+ *
+ * Three columns: course workload (left), semester progress with an
+ * interactive completion checklist (centre), and Canvas announcements
+ * (right). Clicking an announcement opens it in a modal.
  */
 export default function Dashboard() {
   const { user, logout } = useAuth();
@@ -68,7 +72,8 @@ export default function Dashboard() {
   const [announcementsStatus, setAnnouncementsStatus] = useState('idle');
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // Completion state — initialised from localStorage, seeded from Canvas submission flags
+  // IDs of assignments marked complete - loaded from the user's saved checklist on the server,
+  // then seeded with anything Canvas reports as already submitted.
   const [completedIds, setCompletedIds] = useState(new Set());
 
   // Checklist filter: 'all' | 'pending' | 'completed'
@@ -154,7 +159,7 @@ export default function Dashboard() {
     });
   };
 
-  // Aggregate progress calculations
+  // Overall and per-course completion stats, plus a flat assignment list for the checklist.
   const progressStats = useMemo(() => {
     const allAssignments = assignments.flatMap((c) => (c.assignments || []).map((a) => ({ ...a, courseName: c.courseName, courseId: c.courseId })));
     const total = allAssignments.length;
@@ -200,6 +205,7 @@ export default function Dashboard() {
           </p>
         </div>
 
+        {/* Summary stat badges */}
         {status === 'ready' && (
           <div className="dashboard-stats-strip">
             <div className="dashboard-stat-badge">
@@ -275,6 +281,7 @@ export default function Dashboard() {
 
               {status === 'ready' && assignments.length > 0 && (
                 <ul className="dashboard-course-list">
+                  {/* Show the first three assignments per course; the rest are summarised as "+ N more" */}
                   {assignments.map((course) => (
                     <li key={course.courseId} className="dashboard-course-item">
                       <div className="dashboard-course-item__main">

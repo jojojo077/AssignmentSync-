@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { canvas } from '../services/api';
 
+/**
+ * Search page - looks up assignments for a course code (e.g. "ENSE707")
+ * and lists the user's active course codes as a hint.
+ */
 export default function SearchAssignments() {
     const [courseCode, setCourseCode] = useState('');
     const [results, setResults] = useState([]);
+    // Search request state: idle | loading | error | ready
     const [status, setStatus] = useState('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
+    // Active courses, shown under the search box as examples of valid codes.
     const [activeCourses, setActiveCourses] = useState([]);
     const [activeCoursesStatus, setActiveCoursesStatus] = useState('idle');
 
+    // Load the active course list once on mount; `cancelled` guards against updates after unmount.
     useEffect(() => {
         let cancelled = false;
         setActiveCoursesStatus('loading');
@@ -31,6 +38,7 @@ export default function SearchAssignments() {
         };
     }, []);
 
+    // Run the search for the trimmed course code; ignores empty input.
     async function handleSubmit(e) {
         e.preventDefault();
 
@@ -67,6 +75,7 @@ export default function SearchAssignments() {
                 </button>
             </form>
 
+            {/* Hint listing the user's active course codes */}
             {activeCoursesStatus === 'ready' && activeCourses.length > 0 && (
                 <p style={{ fontSize: '0.85rem', opacity: 0.85, marginTop: '-0.5rem', marginBottom: '1rem' }}>
                     Active Courses: {' '}<b>
@@ -77,6 +86,7 @@ export default function SearchAssignments() {
                     </b></p>
             )}
 
+            {/* Results panel - content depends on the search status */}
             <div className="dashboard-card">
                 <div className="dashboard-card__content">
                     {status === 'idle' && (
@@ -134,6 +144,7 @@ export default function SearchAssignments() {
                                                                 month: 'short',
                                                                 day: 'numeric',
                                                                 year: 'numeric',
+                                                                // Canvas due dates are UTC; format in UTC so the day doesn't shift.
                                                                 timeZone: 'UTC',
                                                             })}
                                                         </span>

@@ -1,5 +1,13 @@
 import { formatDateTime, getCourseColor, isSameDay, isToday } from '../../utils/calendarUtils';
 
+/**
+ * Chronological list of assignments grouped by day ("Today", "Tomorrow",
+ * then full dates, with undated items last).
+ *
+ * Props:
+ *  - assignments:        flattened, already-filtered assignments/events
+ *  - onSelectAssignment: called with an item when it is clicked
+ */
 export default function AgendaView({ assignments, onSelectAssignment }) {
   // Sort assignments by due date (null due dates at the end)
   const sorted = [...assignments].sort((a, b) => {
@@ -16,7 +24,7 @@ export default function AgendaView({ assignments, onSelectAssignment }) {
     );
   }
 
-  // Group assignments by date string
+  // Group assignments by a display label. Input is already sorted, so groups come out in date order.
   const groups = [];
   sorted.forEach((item) => {
     let groupKey = 'No Due Date';

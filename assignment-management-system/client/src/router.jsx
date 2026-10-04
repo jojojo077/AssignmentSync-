@@ -1,34 +1,12 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import Dashboard from './pages/Dashboard';
 import Calendar from './pages/Calendar';
 import Assignments from './pages/Assignments';
 import SearchAssignments from './pages/SearchAssignments';
-import Login from './pages/Login';
 import NotFound from './pages/NotFound';
-import { useAuth } from './context/AuthContext';
+import { IndexRoute, ProtectedRoute, LoginRoute } from './components/routing/RouteGuards';
 
-function IndexRoute() {
-  const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <Dashboard /> : <Login />;
-}
-
-function ProtectedRoute({ children }) {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-}
-
-function LoginRoute() {
-  const { isAuthenticated } = useAuth();
-  if (isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-  return <Login />;
-}
-
+// All pages render inside Layout (navbar + content area).
 const router = createBrowserRouter([
     {
         path: '/',
@@ -44,6 +22,7 @@ const router = createBrowserRouter([
       },
     ],
     {
+        // Tests run at the root; builds may be served from a sub-path (e.g. GitHub Pages).
         basename: import.meta.env.MODE === 'test' ? '/' : (import.meta.env.BASE_URL || '/'),
 });
 

@@ -2,6 +2,14 @@ import { getWeekDays, isSameDay, isToday, getCourseColor, formatTimeOnly } from 
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+/**
+ * Seven-column week view (Sunday to Saturday) listing every deadline per day.
+ *
+ * Props:
+ *  - currentDate:        any date within the week to display
+ *  - assignmentsByDate:  flattened, already-filtered assignments/events
+ *  - onSelectAssignment: called with an item when its card is clicked
+ */
 export default function WeekView({ currentDate, assignmentsByDate, onSelectAssignment }) {
   const weekDays = getWeekDays(currentDate);
 

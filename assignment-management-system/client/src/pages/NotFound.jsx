@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 
+/**
+ * Catch-all page for unknown routes.
+ */
 export default function NotFound() {
   return (
     <section>

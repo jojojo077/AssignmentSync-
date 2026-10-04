@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ---------- Frontend: lint, maintainability checks, tests, build ----------
+  frontend:
+    name: Frontend quality checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: assignment-management-system/client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: assignment-management-system/client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint with oxlint (includes maintainability rules for NFR-05)
+        run: npm run lint -- --deny-warnings
+
+      - name: Circular dependency check (NFR-05)
+        run: npx madge --circular --extensions js,jsx src/
+
+      - name: Duplication check (NFR-05)
+        run: npx jscpd src --threshold 5
+
+      - name: Unit and integration tests with coverage
+        run: npm run test:ci
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: assignment-management-system/client/coverage/
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke test - built app serves and renders
+        run: |
+          npx vite preview --port 4173 &
+          npx wait-on http://localhost:4173/AssignmentSync-/ --timeout 30000
+          curl -sf http://localhost:4173/AssignmentSync-/ | grep -q '<div id="root">'
+          echo "Smoke test passed: app built and served successfully"
+
+  # ---------- Backend: format, build, tests (API + its test project only) ----------
+  backend:
+    name: Backend quality checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: assignment-management-system
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      # Scoped to the test project (which references the API) so the
+      # assignmentsync-test projects in the .sln are not built here.
+      - name: Restore
+        run: dotnet restore server.Tests/AMS.Api.Tests.csproj
+
+      - name: Format check
+        run: |
+          dotnet format server/AMS.Api.csproj --verify-no-changes --no-restore
+          dotnet format server.Tests/AMS.Api.Tests.csproj --verify-no-changes --no-restore
+
+      - name: Build (warnings treated as errors)
+        run: dotnet build server.Tests/AMS.Api.Tests.csproj --no-restore -warnaserror
+
+      - name: Test
+        run: dotnet test server.Tests/AMS.Api.Tests.csproj --no-build --verbosity normal

@@ -1,5 +1,13 @@
 import { getCourseColor } from '../../utils/calendarUtils';
 
+/**
+ * Toolbar above the calendar: period title and prev/today/next navigation,
+ * sync and add-event actions, the month/week/agenda switcher, and a row of
+ * course chips for filtering which courses are shown.
+ *
+ * All state lives in the Calendar page; this component only renders it and
+ * reports user actions through the callback props.
+ */
 export default function CalendarHeader({
   currentDate,
   viewMode,
@@ -33,6 +41,7 @@ export default function CalendarHeader({
       </div>
 
       <div className="calendar-header__right" style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        {/* Sync is optional - only rendered when the parent supplies a handler */}
         {onSync && (
           <button
             type="button"
@@ -78,6 +87,7 @@ export default function CalendarHeader({
         </div>
       </div>
 
+      {/* Course filter chips - selected chips use the course colour, deselected ones are greyed out */}
       {courses && courses.length > 0 && (
         <div className="calendar-header__filters">
           <span className="filter-label">Filter Papers:</span>

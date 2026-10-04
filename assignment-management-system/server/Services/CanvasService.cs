@@ -86,7 +86,7 @@ public class CanvasService : ICanvasService
         bool isCompleted = assignment.Submission?.WorkflowState is "submitted" or "graded" or "pending_review";
         if (isCompleted) return AssignmentStatus.Completed;
 
-        return assignment.DueAt is not null && assignment.DueAt < now 
+        return assignment.DueAt is not null && assignment.DueAt < now
             ? AssignmentStatus.Overdue : AssignmentStatus.Uncompleted;
     }
 
@@ -375,7 +375,7 @@ public class CanvasService : ICanvasService
 
         var assignmentLists = await Task.WhenAll(assignmentTasks);
 
-        return matches.Select((course,i) => new CourseWithAssignments
+        return matches.Select((course, i) => new CourseWithAssignments
         {
             CourseId = course.Id,
             CourseName = course.Name,
@@ -383,7 +383,7 @@ public class CanvasService : ICanvasService
         }).ToList();
 
     }
-    
+
 
     public async Task<IReadOnlyList<CourseProgressSummary>> GetAssignmentProgressAsync()
     {
@@ -394,7 +394,7 @@ public class CanvasService : ICanvasService
         foreach (var course in courses)
         {
             var assignments = await GetAssignmentsForCourseAsync(course.Id);
-            var statuses = assignments.Select(a => new AssignmentWithStatus { Assignment = a, Status = Categorize(a, now)}).ToList();
+            var statuses = assignments.Select(a => new AssignmentWithStatus { Assignment = a, Status = Categorize(a, now) }).ToList();
 
             summaries.Add(new CourseProgressSummary
             {
@@ -407,9 +407,9 @@ public class CanvasService : ICanvasService
                 Assignments = statuses,
             });
 
-            
+
         }
         return summaries;
     }
-    
+
 }

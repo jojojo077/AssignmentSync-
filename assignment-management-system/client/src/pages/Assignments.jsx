@@ -2,8 +2,13 @@
 import { useState, useEffect } from 'react';
 import { canvas } from '../services/api';
 
+/**
+ * Stacked horizontal bar showing the completed / overdue / uncompleted
+ * share of a course's assignments.
+ */
 function ProgressBar({ completed, overdue, uncompleted, total })
 {
+    // Convert a count into a percentage width of the bar.
     const x = (n) => (total === 0 ? 0 : (n / total) * 100);
     return (
         <div style={{ display: 'flex', height: '8px', borderRadius: '4px', overflow: 'hidden', background: 'eee' }}>
@@ -14,6 +19,9 @@ function ProgressBar({ completed, overdue, uncompleted, total })
     );
 }
 
+/**
+ * Split a course's assignments into buckets by the status the server assigned.
+ */
 function groupByStatus(assignments) {
     return {
         completed: assignments.filter((a) => a.status === 'Completed'),
@@ -22,6 +30,9 @@ function groupByStatus(assignments) {
     }
 }
 
+/**
+ * Headed list of assignments for one status bucket. Renders nothing when empty.
+ */
 function AssignmentGroup({ title, colorClass, items }) {
     if (items.length === 0) return null;
     return (
@@ -34,6 +45,11 @@ function AssignmentGroup({ title, colorClass, items }) {
         </div>
     );
 }
+
+/**
+ * Collapsible card for one course: completion percentage in the summary,
+ * with the progress bar and per-status lists revealed when expanded.
+ */
 function CourseSection({ course })
 {
     const { completed, overdue, uncompleted } = groupByStatus(course.assignments);
@@ -60,15 +76,21 @@ function CourseSection({ course })
         </details>
     );
 }
+
+/**
+ * Workload Summary page - per-course breakdown of completed, overdue and
+ * uncompleted assignments, fetched from /canvas/assignments/progress.
+ */
 export default function Assignments() {
 
     const [courses, setCourses] = useState([]);
-    const [status, setStatus] = useState('idle');
+    const [status, setStatus] = useState('idle'); // idle | loading | error | ready
 
     useEffect(() => {
         let cancelled = false;
         setStatus('loading');
 
+        // `cancelled` stops state updates if the page unmounts before the request resolves.
         canvas.getAssignmentProgress().then((res) => {
             if (!cancelled) {
                 setCourses(res.data || []);
