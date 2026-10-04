@@ -10,7 +10,7 @@ namespace AMS.Api.Tests;
 public class CanvasServiceTests
 {
     [Fact]
-    public async Task GetAssignmentsForCourse_ExcludesOverdueButIncludesFutureAndUndatedAssignments()
+    public async Task GetAssignmentsForCourse_IncludesOverdueFutureAndUndatedAssignments()
     {
         var handler = new StubCanvasHandler(
             """
@@ -31,10 +31,10 @@ public class CanvasServiceTests
 
         var assignments = await service.GetAssignmentsForCourseAsync(42);
 
-        Assert.Equal(2, assignments.Count);
+        Assert.Equal(3, assignments.Count);
+        Assert.Contains(assignments, assignment => assignment.Id == 1 && assignment.Name == "Overdue assignment");
         Assert.Contains(assignments, assignment => assignment.Id == 2 && assignment.Name == "Future assignment");
         Assert.Contains(assignments, assignment => assignment.Id == 3 && assignment.Name == "No due date");
-        Assert.DoesNotContain(assignments, assignment => assignment.Id == 1);
     }
 
     private sealed class StubCanvasHandler(string responseBody) : HttpMessageHandler
