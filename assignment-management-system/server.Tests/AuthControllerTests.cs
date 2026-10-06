@@ -1,3 +1,15 @@
+// AuthControllerTests.cs
+// Requirements:
+//   FR-01  Secure user authentication and profile management
+//          AC: valid users can log in; invalid credentials are rejected;
+//              unauthorised users cannot access protected data
+//   NFR-04 Authentication and communication must be secure
+//          AC: protected resources cannot be accessed without authentication
+//
+// Every test drives the real ASP.NET Core app in-memory through
+// WebApplicationFactory, so routing, model validation, JWT auth and the
+// user store all run exactly as in production.
+
 using System.Net;
 using System.Net.Http.Json;
 using AMS.Api.Models;
@@ -10,6 +22,7 @@ public class AuthControllerTests(WebApplicationFactory<Program> factory) : IClas
 {
     private readonly HttpClient _client = factory.CreateClient();
 
+    // TC-78 | FR-01 | Login for an unregistered user is rejected with 401
     [Fact]
     public async Task Login_WithUnknownUser_ReturnsUnauthorized()
     {
@@ -22,6 +35,7 @@ public class AuthControllerTests(WebApplicationFactory<Program> factory) : IClas
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    // TC-79 | FR-01 | Valid login saves the supplied Canvas token to that user
     [Fact]
     public async Task Login_WithCanvasToken_SavesTokenToTheLoggedInUser()
     {
@@ -40,6 +54,7 @@ public class AuthControllerTests(WebApplicationFactory<Program> factory) : IClas
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
+    // TC-80 | NFR-04 | Login cannot claim another user's Canvas token (409)
     [Fact]
     public async Task Login_WithAnotherUsersCanvasToken_ReturnsConflict()
     {
@@ -65,6 +80,7 @@ public class AuthControllerTests(WebApplicationFactory<Program> factory) : IClas
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
 
+    // TC-81 | NFR-04 | Registration cannot reuse another user's Canvas token (409)
     [Fact]
     public async Task Register_WithAnotherUsersCanvasToken_ReturnsConflict()
     {
@@ -88,6 +104,7 @@ public class AuthControllerTests(WebApplicationFactory<Program> factory) : IClas
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
 
+    // TC-82 | NFR-04 | One user's checklist is never returned to another user
     [Fact]
     public async Task Checklist_IsReadOnlyFromTheAuthenticatedUsersRecord()
     {
@@ -132,6 +149,7 @@ public class AuthControllerTests(WebApplicationFactory<Program> factory) : IClas
     // Represents the user fields returned by registration and login.
     private sealed record AuthUser(string Email, string Name);
 
+    // TC-83 | FR-01 | Invalid registration input is rejected with 400
     [Fact]
     public async Task Register_WithInvalidEmail_Returns400FromModelValidation()
     {

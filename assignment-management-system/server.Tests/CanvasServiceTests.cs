@@ -1,3 +1,13 @@
+// CanvasServiceTests.cs
+// Requirements:
+//   FR-02  Integrate with Canvas API to synchronise assignments, deadlines,
+//          announcements and calendar events
+//          AC: imported assignment titles and dates match Canvas data
+//
+// Drives the real CanvasService against a stubbed HttpMessageHandler, so the
+// JSON parsing and overdue categorisation run unchanged while no request
+// leaves the machine.
+
 using System.Net;
 using System.Net.Http.Json;
 using AMS.Api.Config;
@@ -10,6 +20,7 @@ namespace AMS.Api.Tests;
 
 public class CanvasServiceTests
 {
+    // TC-89 | FR-02 | Overdue, future and undated assignments are all imported
     [Fact]
     public async Task GetAssignmentsForCourse_IncludesOverdueFutureAndUndatedAssignments()
     {
@@ -43,6 +54,7 @@ public class CanvasServiceTests
         Assert.Equal(AssignmentStatus.Uncompleted, CanvasService.Categorize(assignments.Single(a => a.Id == 3), now));
     }
 
+    // Fakes the Canvas REST API: every request gets the same canned JSON body.
     private sealed class StubCanvasHandler(string responseBody) : HttpMessageHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(

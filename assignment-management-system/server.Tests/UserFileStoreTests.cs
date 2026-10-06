@@ -1,3 +1,12 @@
+// UserFileStoreTests.cs
+// Requirements:
+//   NFR-04 Authentication and communication must be secure, protecting
+//          sensitive information
+//          AC: one user's data is never exposed to another user
+//
+// Drives the real UserFileStore against a throwaway temp file, so the same
+// read/write code used in production stores and looks up each user.
+
 using Microsoft.Extensions.Configuration;
 using AMS.Api.Models;
 using AMS.Api.Services;
@@ -7,6 +16,7 @@ namespace AMS.Api.Tests;
 
 public class UserFileStoreTests
 {
+    // TC-92 | NFR-04 | Lookup returns only the requested user's token and checklist
     [Fact]
     public async Task UserDataLookup_ReturnsOnlyTheRequestedUsersRecord()
     {

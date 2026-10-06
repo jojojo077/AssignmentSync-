@@ -1,3 +1,12 @@
+// HealthControllerTests.cs
+// Requirements:
+//   NFR-03 Canvas synchronisation should complete reliably with appropriate
+//          error handling
+//          AC: failed requests are handled appropriately
+//
+// Smoke checks that the API starts and answers, and that an unknown route
+// fails cleanly with 404 instead of an unhandled error.
+
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,6 +23,7 @@ public class HealthControllerTests(WebApplicationFactory<Program> factory) : ICl
 {
     private readonly HttpClient _client = factory.CreateClient();
 
+    // TC-90 | NFR-03 | Health endpoint returns 200 with status "ok"
     [Fact]
     public async Task GetHealth_ReturnsOkWithStatus()
     {
@@ -26,6 +36,7 @@ public class HealthControllerTests(WebApplicationFactory<Program> factory) : ICl
         Assert.NotNull(body?.Timestamp);
     }
 
+    // TC-91 | NFR-03 | Unknown route returns 404 Not Found
     [Fact]
     public async Task UnknownRoute_Returns404()
     {
