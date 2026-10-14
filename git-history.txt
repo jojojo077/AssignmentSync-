@@ -1,0 +1,479 @@
+commit adead6226cb03ee14dceab6156152898356f6324
+Merge: 262ee72 4897eaa
+Author: William Bindon <billwindon@icloud.com>
+Date:   Wed Oct 7 13:43:55 2026 +1300
+
+    Merge pull request #5 from jojojo077/testing-branch-protection
+    
+    Delete test-branch-protection.txt
+
+commit 4897eaa1a13ca888ebd8b05a58fb4f55a68d7a86
+Author: William <billwindon@icloud.com>
+Date:   Wed Oct 7 13:37:38 2026 +1300
+
+    Delete test-branch-protection.txt
+
+commit 262ee72b010b42d111ecc6c3b4a277fe581d0aba
+Merge: 40ed468 2d53a79
+Author: William Bindon <billwindon@icloud.com>
+Date:   Wed Oct 7 13:17:36 2026 +1300
+
+    Merge pull request #4 from jojojo077/testing-branch-protection
+    
+    Create test-branch-protection.txt
+
+commit 2d53a799c8353e5fbbc3ffcd9d50e5453ac21e96
+Author: William <billwindon@icloud.com>
+Date:   Wed Oct 7 13:03:46 2026 +1300
+
+    Create test-branch-protection.txt
+
+commit 40ed4685c2cf64a8e110a5d2956e80c29a02073b
+Author: William Bindon <billwindon@icloud.com>
+Date:   Tue Oct 6 14:51:20 2026 +1300
+
+    Commenting server side tests
+    
+    Adding server side tests to the test register
+
+commit 2ef82cf35551f0248c5f32b0728203ce43b4d7d7
+Merge: d0d013d cb21b50
+Author: William Bindon <billwindon@icloud.com>
+Date:   Mon Oct 5 12:04:09 2026 +1300
+
+    Merge branch 'main' of https://github.com/jojojo077/AssignmentSync-
+
+commit d0d013d853d1e6ba51510adb464c6ae68364f087
+Author: William Bindon <billwindon@icloud.com>
+Date:   Mon Oct 5 12:02:18 2026 +1300
+
+    Include overdue assignments in Canvas query
+    
+    Update the Canvas assignment test to reflect the intended behavior: overdue, future, and undated assignments are all included in the result set. This aligns the test with the service behavior and ensures overdue assignments are no longer excluded.
+
+commit cb21b50850dc6c7ff79a7f31b9f56910cdd3b634
+Author: William <billwindon@icloud.com>
+Date:   Wed Sep 30 13:54:12 2026 +1300
+
+    Add CI quality gates
+
+commit 83decf59759f937ccc10065c412d3c9d85780826
+Author: William <billwindon@icloud.com>
+Date:   Wed Sep 30 13:21:40 2026 +1300
+
+    Commenting code to align with non functional requirements
+
+commit 78874de38e014bbb4df363d2ddb8e2931efa1382
+Author: William Bindon <billwindon@icloud.com>
+Date:   Sun Sep 27 14:20:12 2026 +1300
+
+    Add dashboard logout and auth cleanup
+    
+    This change adds a signed-in user display and logout action to the dashboard, clears browser session state including cached custom calendar events on logout, and updates the auth test suite to use shared render helpers. It also adds coverage for logout flow, protected routes, and related dashboard behaviors.
+
+commit 0ea54f1432dadea0820c4bc02f34caa213d8bf11
+Author: William Bindon <billwindon@icloud.com>
+Date:   Sun Sep 27 12:03:01 2026 +1300
+
+    Organising tests for test register and rtm cleanup
+
+commit ec471a938d53f8a8c5f94a5df765c15aa280674d
+Author: William Bindon <billwindon@icloud.com>
+Date:   Sat Sep 26 18:21:16 2026 +1200
+
+    Add tests; fix date locales, router and login
+    
+    Add comprehensive unit/integration tests for search/filter/sort and workload calculation (tests added: src/tests/SearchFilterSort.test.jsx, src/tests/WorkloadCalculation.test.jsx). Make date rendering deterministic by specifying 'en-US' locale and UTC timezone in Dashboard and SearchAssignments. Simplify Login error handling to use a clear server/fallback message. Adjust router basename to use '/' in test mode and fall back to import.meta.env.BASE_URL in other environments. These changes improve test stability and error messaging.
+
+commit 267416e147b20779a08be19f50c1a110263a1c5c
+Author: jojojo077 <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 23:16:36 2026 +1200
+
+    Add GitHub Actions workflow for deploying to Pages
+
+commit 390872774e313316b1206b056a80ac52c4b60d2d
+Merge: 0c11ef0 7d7216a
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 22:52:44 2026 +1200
+
+    Merge branch 'main' of https://github.com/jojojo077/AssignmentSync-
+
+commit 0c11ef01ab0909f915349d31420518818dcfbb92
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 22:52:29 2026 +1200
+
+    Changed vite.config and Router base repo names
+
+commit 7d7216ac76c07a52f145f727b73cc0919f3a53e5
+Author: jojojo077 <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 22:31:29 2026 +1200
+
+    Fix file path in Azure deployment workflow
+
+commit 009c35e411567957f3fe2f741ad26bab0f0dedc3
+Merge: c47ce0e 4c7d127
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 22:21:08 2026 +1200
+
+    Merge branch 'main' of https://github.com/jojojo077/AssignmentSync-
+
+commit c47ce0e673394fc022aba56fd51cdd807814245d
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 22:21:05 2026 +1200
+
+    Added root base for github page
+
+commit 4c7d1276f40248bb3970ae91ae2cba99ae4a5f98
+Author: jojojo077 <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 22:18:38 2026 +1200
+
+    Refactor Azure deployment workflow for ASP.Net Core app
+
+commit 19d11b97a3052e23270e18a73bcab68fcb3524d0
+Author: jojojo077 <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 16:26:50 2026 +1200
+
+    Add or update the Azure App Service build and deployment workflow config
+
+commit 034c8533466c0ef1e9cd50c12b9f73b83972aeda
+Author: jojojo077 <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Sep 24 16:22:10 2026 +1200
+
+    Add or update the Azure App Service build and deployment workflow config
+
+commit 3ba1ec896e4c32a5736b9f1243551c7cc4d684ac
+Merge: 4f4c286 b10519a
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 18:07:21 2026 +1200
+
+    Merge branch 'Workload-Summary'
+
+commit b10519af254e2608f903dec2fe81259cea127315
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 18:03:44 2026 +1200
+
+    Added Header to page
+    
+    Changed Title in NavBar, Title and summary of page purpose
+
+commit e9a0b633c2b7541883f0c6d188d883db199e895b
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 17:51:43 2026 +1200
+
+    Added groupByStatus
+    
+    Categorize assignments in the workload summary by the status of completion
+
+commit c3bbb29af913a728086db24f78279e2506a3f27b
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 16:12:43 2026 +1200
+
+    Workload Summary page
+    
+    This page shows each course and the overall completion of the course with completed, uncompleted and overdue total
+
+commit 4f4c286f88dbdd715cb084ac632ae373370ff905
+Merge: 9b9106e 523c5f2
+Author: William Bindon <billwindon@icloud.com>
+Date:   Wed Sep 23 15:51:42 2026 +1200
+
+    Merge pull request #3 from jojojo077/Login-Authentication
+    
+    Add auth, user file store & per-user progress
+
+commit 523c5f2bfc2dc193dfccb45889b6fbab86fd96f6
+Author: William <billwindon@icloud.com>
+Date:   Wed Sep 23 15:47:09 2026 +1200
+
+    Add auth, user file store & per-user progress
+    
+    Implements a simple authentication system and per-user checklist storage. Server: introduces UserFileStore (file-backed user records), AuthTokenService (signed bearer tokens), ProgressController, and updates AuthController/CanvasController to persist and protect user-specific Canvas tokens and checklists. Adds middleware in Program to validate bearer tokens and wires CanvasService to use per-user Canvas tokens. Client: new polished Login UI, AuthContext persists user to localStorage, Navbar shows user and sign-out, router enforces protected routes, Dashboard reads/writes checklist via progress API, and api base URL updated. Tests updated/added to reflect auth and per-user behavior. .gitignore and appsettings adjusted; launch port changed to 5003.
+
+commit 9b9106e6cd562682016f931669649ccb146aa429
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 04:58:03 2026 +1200
+
+    Added GetAssignmentProgressAsync()
+    
+    Returns the course total of assignments and their status of completion
+
+commit 6cf8c9dee0d03377e4b5a68fb3a20a6fef251023
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 02:24:06 2026 +1200
+
+    Fixed commit errors
+    
+    Merged commits caused for unexpected return errors relating to AssignmentStatus Categorize()
+
+commit 34ab47577cca259c3606c39617ad83777dde4479
+Merge: 29de72f f80c8b5
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 02:15:36 2026 +1200
+
+    Merge branch 'fixing-errors'
+
+commit f80c8b5e32fdd2f904dd03cb8b43d74bfa1adb3b
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 02:14:59 2026 +1200
+
+    Added Assignment Status for Workload Summary | FIX
+
+commit 29de72fd1d686e12492f901146a087c2f5b627ac
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Sep 23 00:50:33 2026 +1200
+
+    Added Assignment Status for Workload Summary
+
+commit cde68a4209b8e4431d37b837adf38a492ea423c7
+Author: William <billwindon@icloud.com>
+Date:   Tue Sep 22 17:59:34 2026 +1200
+
+    Exclude overdue Canvas assignments
+    
+    Canvas assignments were being returned even after their due date had passed. This commit filters out overdue assignments while keeping future and undated assignments, and adds a regression test to cover the behavior.
+
+commit 5adec38a1bd06d2f419d4dd79c1e6014a3f8f77d
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Tue Sep 22 14:47:12 2026 +1200
+
+    Fixed Active Courses not displaying
+
+commit 89b50fa3413c5cfecf28da0b375518bb165566cf
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Tue Sep 22 02:53:27 2026 +1200
+
+    Added GetAllCoursesAsync
+    
+    Returns ALL courses
+
+commit 112a11a14c2803d2b66c3448ec5c779429d40ec3
+Merge: 68c4d48 0462349
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Sep 20 01:22:39 2026 +1200
+
+    Merge branch 'C#-to-TS-conversion'
+
+commit 0462349bb1aea89316b8ddf3918fed29e4ab47eb
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Sep 20 01:22:22 2026 +1200
+
+    ToDo | Finish Assignments page
+
+commit 0d590a1c4354df5f8d10e70208a38cdf15765c33
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Sep 20 01:21:32 2026 +1200
+
+    Touchups
+
+commit fa9684a1d7dc7e5c3720fefdf85af767bfec0abc
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Sep 20 01:05:27 2026 +1200
+
+    Fixed server dotnet run errors
+    
+    function name mismatches
+
+commit bad15862d395233384e4c6f8a9326f9692cad8e5
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Sep 20 00:53:53 2026 +1200
+
+    SearchAssignments | TEST
+
+commit 68c4d4863013391c053d7c51760fa3dc38484c93
+Author: William Bindon <billwindon@icloud.com>
+Date:   Sat Sep 19 14:00:34 2026 +1200
+
+    Generating more unit tests for the dashboard and calendar
+
+commit f14795fc4b36a24e2b7eb67bbe11adc087efd429
+Author: William <billwindon@icloud.com>
+Date:   Sat Sep 19 10:31:25 2026 +1200
+
+    Add semester progress widget and styles
+    
+    Introduce a Semester Progress column: overall %, per-course breakdown, interactive checklist with persisted completed-state (via canvas.getCompletedAssignments / setCompletedAssignments), and motivational badges. Improve Dashboard logic with useMemo for progress calculations, accessibility improvements (progressbar ARIA, modal click handling, clearer labels), and minor UI text tweaks. Update CSS: wider container, three-column dashboard layout and responsive breakpoints, plus comprehensive styles for the progress widget and checklist. Expand unit tests to cover progress rendering and toggling; add mocked canvas methods. Small test import added to server tests (System.Net.Http.Json).
+
+commit f9c26bff776ed2a1c5047447735559a16762b031
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sat Sep 19 01:32:14 2026 +1200
+
+    Stable Build | Change user-secrets
+
+commit ec44936a713d8f764f30664bc26181f113a928c6
+Author: William Bindon <billwindon@icloud.com>
+Date:   Tue Sep 15 12:56:48 2026 +1200
+
+    Add Canvas calendar sync and event APIs
+    
+    This commit adds end-to-end Canvas calendar support for the app. The client now syncs live Canvas events, shows a sync button, merges remote plus local events, and handles create/delete flows with local cache pruning. The server exposes new calendar event endpoints, validates required event titles, and adds Canvas service methods for fetching, creating, and deleting events. Tests were updated to cover the new event API routes and validation behavior.
+
+commit 294ad2a1f8db9cb6d7ed9dcc74a8ead9cf8f3626
+Author: William Bindon <billwindon@icloud.com>
+Date:   Tue Sep 15 12:23:28 2026 +1200
+
+    Adding Recent Announcements to the Dashboard
+
+commit 95ec3d65297937411af0c3fa6b9becf006f69534
+Merge: 26b5ad2 6abf6ae
+Author: William Bindon <billwindon@icloud.com>
+Date:   Tue Sep 15 07:57:10 2026 +1200
+
+    Merge pull request #2 from jojojo077/client-side-test-cases
+    
+    Add custom calendar events
+
+commit 26b5ad2bdb5d5b9bb292ee43a130fe3644a9bc3a
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Sep 13 02:35:59 2026 +1200
+
+    AssignmentPriorityLogic | MergeSort
+
+commit 05149b339aec4a61fa5f91778fee9a4eeec4f21a
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sat Sep 12 03:24:05 2026 +1200
+
+    Modifed GetAssignments - Can Get Upcoming/non-passed assignments
+
+commit 6abf6ae851d636b895c76ea14115db4db2c0b955
+Author: William <billwindon@icloud.com>
+Date:   Wed Sep 9 11:37:32 2026 +1200
+
+    Add custom calendar events
+    
+    This change adds a custom event flow to the calendar, including an add-event modal, save/delete actions, and local storage persistence via the canvas API layer. Calendar filtering now includes a Personal Events bucket, and the assignment modal supports deleting custom entries. It also updates calendar and dashboard tests to cover the new event creation behavior.
+
+commit 2bd0e1fe07ba121082a656e3429a584a10cdcac3
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Thu Aug 27 00:27:33 2026 +1200
+
+    Added Comments
+
+commit 7d2abd807ddd6e8e3526cc918673f679760ff125
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Aug 26 23:14:39 2026 +1200
+
+    Added Constructor Tests
+
+commit 3edf6a4911a3a7da772ffa5e27111d0d0ac860c1
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Tue Aug 25 01:18:53 2026 +1200
+
+    Merge Branches
+
+commit 5c9993c2653179a2cc6434ac1f4915bb127bd4f2
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Aug 19 19:27:20 2026 +1200
+
+    Update main.cs
+
+commit 82014187830c99c6ab13e9a4334bd5f37712a781
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Aug 19 17:42:47 2026 +1200
+
+    Convert methods into Account
+    
+    Account creation require Token and URL
+
+commit 4faea53347d7e110ae7c3894d5b1f4210692bc90
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Aug 19 03:29:46 2026 +1200
+
+    Test cases for search & returnCalendar
+
+commit eef361a545d3c57a5dcf7a0644c94f9947e4a09d
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Aug 19 03:02:52 2026 +1200
+
+    Converted methods into class
+
+commit fedac6454622d6a0117530e54b961c9351be79cd
+Merge: 4e7c1f0 ff25971
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Aug 19 02:12:25 2026 +1200
+
+    Add 'assignmentsync-test/' from commit 'ff25971157dbad3548f615ea553157f6cf3199f2'
+    
+    git-subtree-dir: assignmentsync-test
+    git-subtree-mainline: 4e7c1f00575f36ef980f3393dd41aadd43d6d90c
+    git-subtree-split: ff25971157dbad3548f615ea553157f6cf3199f2
+
+commit ff25971157dbad3548f615ea553157f6cf3199f2
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Wed Aug 19 01:16:13 2026 +1200
+
+    Update methods | added function - searchbycoursecode
+
+commit 844daf37e569f67db57c67ffc994b8b6271493f8
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Tue Aug 18 18:20:40 2026 +1200
+
+    Convert into Methods
+
+commit a244d1db88ef45cccd35402c61bec67da423d9a9
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Tue Aug 18 18:13:38 2026 +1200
+
+    Convert Javascript code into C#
+
+commit d25f216f665354f2ffc0976e9c43e321ef9dbf32
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Tue Aug 18 17:54:50 2026 +1200
+
+    Add more methods
+
+commit 4e7c1f00575f36ef980f3393dd41aadd43d6d90c
+Author: William Bindon <billwindon@icloud.com>
+Date:   Tue Aug 18 17:30:55 2026 +1200
+
+    Making Client side Test cases
+
+commit 26504ab15365e9dcd817aabcd5c2e0cd9669b861
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Aug 16 23:36:30 2026 +1200
+
+    Add project files.
+
+commit 5e921fd7eaaeb64ba412fce13c80ab3f366c34f2
+Author: Dorp <46204816+jojojo077@users.noreply.github.com>
+Date:   Sun Aug 16 23:36:28 2026 +1200
+
+    Add .gitattributes and .gitignore.
+
+commit b990633a83f934f65480372e73e5a01142f77348
+Author: William <billwindon@icloud.com>
+Date:   Sat Aug 15 16:54:29 2026 +1200
+
+    Implementing Dashboard and Calendar
+
+commit f9ad29a5fcbdb63aef5634cbaff97f5a5c3088b8
+Author: William <billwindon@icloud.com>
+Date:   Thu Aug 13 18:41:48 2026 +1200
+
+    Confirming Canvas Access Token can connect to dashboard
+
+commit d69135fd3468f4658921e6f96ac9ffd2c779788b
+Author: William <billwindon@icloud.com>
+Date:   Tue Aug 11 16:13:41 2026 +1200
+
+    Demo Changing backend to C#
+
+commit 753e0e6aa449bf0bfed1d359969bb5ff883472ae
+Merge: 7eea1d8 025f005
+Author: William Bindon <billwindon@icloud.com>
+Date:   Sun Aug 9 17:55:28 2026 +1200
+
+    Merge pull request #1 from jojojo077/AI-Demo-Branch
+    
+    Getting AI to make a demo of our product.
+
+commit 025f005bb6fe65dad04aa81dfe513b36b318e40b
+Author: William <billwindon@icloud.com>
+Date:   Sun Aug 9 17:52:17 2026 +1200
+
+    Getting AI to make a demo of our product.
+
+commit 7eea1d8cba6b9d215fa455bb76b977540fd849c1
+Author: William <billwindon@icloud.com>
+Date:   Sun Aug 9 15:53:25 2026 +1200
+
+    Create Readme
